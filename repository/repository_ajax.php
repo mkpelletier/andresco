@@ -27,13 +27,17 @@
  */
 
 /**
- * Enhanced by Androgogic Pty Ltd
+ * Enhanced by Andresco
  * http://code.google.com/p/andresco
+ *
+ * This is the repository/repository_ajax.php file delivered with Moodle 2.0
+ * with enhancements specific to Andresco.
  * 
- * @author		Praj Basnet
- * @since		2.2
- * 
- */ 
+ * @copyright 	2012+ Androgogic Pty Ltd
+ * @author		Praj Basnet <praj.basnet@androgogic.com>
+ * @since		2.0
+ *
+ **/
  
 define('AJAX_SCRIPT', true);
 
@@ -55,7 +59,7 @@ $itemid    = optional_param('itemid', 0, PARAM_INT);            // Itemid
 $page      = optional_param('page', '', PARAM_RAW);             // Page
 $maxbytes  = optional_param('maxbytes', 0, PARAM_INT);          // Maxbytes
 $req_path  = optional_param('p', '', PARAM_RAW);                // Path
-$accepted_types  = optional_param_array('accepted_types', '*', PARAM_RAW);
+$accepted_types  = optional_param('accepted_types', '*', PARAM_RAW);
 $saveas_filename = optional_param('title', '', PARAM_FILE);     // save as file name
 $saveas_path   = optional_param('savepath', '/', PARAM_PATH);   // save as file path
 $search_text   = optional_param('s', '', PARAM_CLEANHTML);
@@ -80,7 +84,7 @@ if (empty($_POST) && !empty($action)) {
 }
 
 if (!confirm_sesskey()) {
-    $err->error = get_string('invalidsesskey', 'error');
+    $err->error = get_string('invalidsesskey');
     die(json_encode($err));
 }
 
@@ -221,7 +225,7 @@ switch ($action) {
             // use external link
             $link = $repo->get_link($source);
             $info = array();
-            $info['file'] = $saveas_filename;
+            $info['filename'] = $saveas_filename;
             $info['type'] = 'link';
             $info['url'] = $link;
             echo json_encode($info);
@@ -241,9 +245,6 @@ switch ($action) {
                     throw new file_exception('maxbytes');
                 }
                 $fileinfo = $repo->copy_to_area($source, $itemid, $saveas_path, $saveas_filename);
-                if (!isset($fileinfo['event'])) {
-                    $fileinfo['file'] = $fileinfo['title'];
-                }
                 echo json_encode($fileinfo);
                 die;
             }
@@ -287,11 +288,19 @@ switch ($action) {
         }
         break;
     case 'upload':
-        // BEGIN: Andresco
-        // Add upload target UUID as a parameter to upload		
-        $result = $repo->upload($saveas_filename, $maxbytes, $upload_uuid, $env);        		
-        // END: Andresco
-        echo json_encode($result);
+        // handle exception here instead moodle default exception handler
+        // see MDL-23407
+        try {
+            // BEGIN: Andresco
+            // Add upload target UUID as a parameter to upload		
+            $result = $repo->upload($saveas_filename, $maxbytes, $upload_uuid, $env);        		
+            // END: Andresco
+            echo json_encode($result);
+        } catch (Exception $e) {
+            $err->error = $e->getMessage();
+            echo json_encode($err);
+            die;
+        }
         break;
 	// BEGIN: Andresco
 	case 'uploadform':
@@ -308,8 +317,7 @@ switch ($action) {
         $newfilepath = required_param('newfilepath', PARAM_PATH);
         $newfilename = required_param('newfilename', PARAM_FILE);
 
-        $info = repository::overwrite_existing_draftfile($itemid, $filepath, $filename, $newfilepath, $newfilename);
-        echo json_encode($info);
+        echo json_encode(repository::overwrite_existing_draftfile($itemid, $filepath, $filename, $newfilepath, $newfilename));
         break;
 
     case 'deletetmpfile':

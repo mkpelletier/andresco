@@ -24,6 +24,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Enhanced by Andresco
+ * http://code.google.com/p/andresco
+ *
+ * This is the mod/resource/mod_form.php file delivered with Moodle 2.0
+ * with enhancements specific to Andresco.
+ * 
+ * @copyright 	2012+ Androgogic Pty Ltd
+ * @author		Praj Basnet <praj.basnet@androgogic.com>
+ * @since		2.0
+ *
+ **/
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
@@ -39,8 +52,8 @@ class mod_resource_mod_form extends moodleform_mod {
 
         if ($this->current->instance and $this->current->tobemigrated) {
             // resource not migrated yet
-            $resource_old = $DB->get_record('resource_old', array('oldid'=>$this->current->instance));
-            $mform->addElement('static', 'warning', '', get_string('notmigrated', 'resource', $resource_old->type));
+            $resoruce_old = $DB->get_record('resource_old', array('oldid'=>$this->current->instance));
+            $mform->addElement('static', 'warning', '', get_string('notmigrated', 'resource', $resoruce_old->type));
             $mform->addElement('cancel');
             $this->standard_hidden_coursemodule_elements();
             return;

@@ -2,15 +2,15 @@
 // Author: Dongsheng Cai <dongsheng@moodle.com>
 
 /**
- * Enhanced by Androgogic Pty Ltd
+ * Enhanced by Andresco
  * http://code.google.com/p/andresco
  *
- * This is the filepicker.js file delivered with Moodle 2.2
+ * This is the filepicker.js file delivered with Moodle 2.0
  * with enhancements specific to Andresco.
  * 
- * @copyright 	2012+ Androgogic Pty Ltd
+ * @copyright	2012+ Androgogic Pty Ltd
  * @author		Praj Basnet <praj.basnet@androgogic.com>
- * @since		2.2
+ * @since		2.0
  *
  **/
 
@@ -162,11 +162,7 @@ M.core_filepicker.init = function(Y, options) {
                         // error checking
                         if (data && data.error) {
                             scope.print_msg(data.error, 'error');
-                            if (args.onerror) {
-                                args.onerror(id,data,p);
-                            } else {
-                                Y.one(panel_id).set('innerHTML', '');
-                            }
+                            scope.list();
                             return;
                         } else if (data && data.event) {
                             switch (data.event) {
@@ -228,11 +224,6 @@ M.core_filepicker.init = function(Y, options) {
                         if (scope.options.editor_target && scope.options.env == 'editor') {
                             scope.options.editor_target.value = data.existingfile.url;
                             scope.options.editor_target.onchange();
-                        } else if (scope.options.env === 'filepicker') {
-                            var fileinfo = {'client_id':client_id,
-                                    'url':data.existingfile.url,
-                                    'file':data.existingfile.filename};
-                            scope.options.formcallback.apply(scope, [fileinfo]);
                         }
                     }
                 }, true);
@@ -244,16 +235,14 @@ M.core_filepicker.init = function(Y, options) {
                 }
                 this.cancel();
                 scope.hide();
+                data.client_id = client_id;
                 var formcallback_scope = null;
                 if (scope.options.magicscope) {
                     formcallback_scope = scope.options.magicscope;
                 } else {
                     formcallback_scope = scope;
                 }
-                var fileinfo = {'client_id':client_id,
-                                'url':data.newfile.url,
-                                'file':data.newfile.filename};
-                scope.options.formcallback.apply(formcallback_scope, [fileinfo]);
+                scope.options.formcallback.apply(formcallback_scope, [data]);
             }
             var handleCancel = function() {
                 // Delete tmp file
@@ -790,6 +779,31 @@ M.core_filepicker.init = function(Y, options) {
 				}
 				html += '<td class="mdl-right"><label for="newdescription-'+client_id+'">'+'Description'+':</label></td>';
 				html += '<td class="mdl-left"><textarea name="description" id="newdescription-'+client_id+'" rows="5" cols="40"/>'+args.description+'</textarea></td></tr>';
+				
+				// Display Alfresco version number
+				html += '<tr><td class="mdl-right"><label for="newname-'+client_id+'">'+'Version Number'+':</label></td>';
+				html += '<td class="mdl-left"><input type="text" name="title" id="newname-'+client_id+'" value="1.0" size="50"/></td></tr>';
+   
+				// Display version options if versioning strategy is user selectable
+				if (this.active_repo.versioning_strategy == 'userupdate' || this.active_repo.versioning_strategy == 'userpoint') {
+					// Display user versioning strategy options as a dropdown list
+					html += '<tr>';
+					html += '<td class="mdl-right">Versioning Strategy: </td>';
+					html += '<td class="mdl-left">';
+					html += '<select name="content-type" id="select-versioning-strategy-'+client_id+'">';
+					// TODO: There would be a more efficient way to dtermine which one is selected below
+					if (this.active_repo.versioning_strategy == 'userupdate') {
+						html += '<option selected="selected" value="userupdate">Automatically update this link to newer versions</option>';
+						html += '<option value="userpoint">This link points permanently to the selected version</option>';
+					}
+					else {
+						html += '<option value="userupdate">Automatically update this link to newer versions</option>';
+						html += '<option selected="selected" value="userpoint">This link points permanently to the selected version</option>';
+					}
+					html += '</select>';
+					html += '</td>';
+					html += '</tr>';
+				}
 			}
 			else {
 				html += '<td class="mdl-left"><input type="text" id="newname-'+client_id+'" value="'+args.title+'" /></td></tr>';								
@@ -883,13 +897,13 @@ M.core_filepicker.init = function(Y, options) {
                     params['author'] = author.get('value');
                 }
 
-                if (this.options.externallink && this.options.env == 'editor') {
+                if (this.options.env == 'editor') {
                     // in editor, images are stored in '/' only
                     params.savepath = '/';
                     // when image or media button is clicked
                     if ( this.options.return_types != 1 ) {
-                        var linkexternal = Y.one('#linkexternal-'+client_id);
-                        if (linkexternal && linkexternal.get('checked')) {
+                        var linkexternal = Y.one('#linkexternal-'+client_id).get('checked');
+                        if (linkexternal) {
                             params['linkexternal'] = 'yes';
                         }
                     } else {
@@ -908,9 +922,6 @@ M.core_filepicker.init = function(Y, options) {
                     client_id: client_id,
                     repository_id: repository_id,
                     'params': params,
-                    onerror: function(id, obj, args) {
-                        scope.view_files();
-                    },
                     callback: function(id, obj, args) {
                         if (scope.options.editor_target && scope.options.env=='editor') {
                             scope.options.editor_target.value=obj.url;
@@ -987,8 +998,8 @@ M.core_filepicker.init = function(Y, options) {
             this.mainui.beforeRenderEvent.subscribe(function() {
                 YAHOO.util.Event.onAvailable('layout-'+client_id, function() {
                     // BEGIN: Andresco
-					// Hide the view as icon/list buttons for andresco only
-					// TODO: Fix this to check if we are in andresco or not (GK+1)
+						// Hide the view as icon/list buttons for andresco only
+						// TODO: Fix this to check if we are in andresco or not (GK+1)
                     layout = new YAHOO.widget.Layout('layout-'+client_id, {
                         height: 480, width: 700,
                         units: [
@@ -1040,22 +1051,16 @@ M.core_filepicker.init = function(Y, options) {
             Y.on('contentready', function(el) {
                 var list = Y.one(el);
                 var count = 0;
-                // Resort the repositories by sortorder
-                var sorted_repositories = new Array();
                 for (var i in r) {
-                    sorted_repositories[r[i].sortorder - 1] = r[i];
-                }
-                for (var i in sorted_repositories){
-                    repository = sorted_repositories[i];
-                    var id = 'repository-'+client_id+'-'+repository.id;
+                    var id = 'repository-'+client_id+'-'+r[i].id;
                     var link_id = id + '-link';
-                    list.append('<li id="'+id+'"><a class="fp-repo-name" id="'+link_id+'" href="###">'+repository.name+'</a></li>');
-                    Y.one('#'+link_id).prepend('<img src="'+repository.icon+'" width="16" height="16" />&nbsp;');
+                    list.append('<li id="'+id+'"><a class="fp-repo-name" id="'+link_id+'" href="###">'+r[i].name+'</a></li>');
+                    Y.one('#'+link_id).prepend('<img src="'+r[i].icon+'" width="16" height="16" />&nbsp;');
                     Y.one('#'+link_id).on('click', function(e, scope, repository_id) {
                         YAHOO.util.Cookie.set('recentrepository', repository_id);
                         scope.repository_id = repository_id;
                         this.list({'repo_id':repository_id});
-                    }, this /*handler running scope*/, this/*second argument*/, repository.id/*third argument of handler*/);
+                    }, this /*handler running scope*/, this/*second argument*/, r[i].id/*third argument of handler*/);
                     count++;
                 }
                 if (count==0) {
@@ -1314,6 +1319,7 @@ M.core_filepicker.init = function(Y, options) {
         search: function(args) {
             var data = this.logindata;
             var params = {};
+
             for (var k in data) {
                 if(data[k].type!='popup') {
                     var el = document.getElementsByName(data[k].name)[0];
@@ -1383,8 +1389,10 @@ M.core_filepicker.init = function(Y, options) {
                     }
 					// BEGIN: Andresco
 					// Store current path as cookie (lastlocation)	
+					if (obj.path) {
 					var lastlocation = obj.path[obj.path.length -1].path;
 					YAHOO.util.Cookie.set('lastlocation', lastlocation);
+					}					
 					// END: Andresco
                 }
             }, true);
@@ -1436,6 +1444,28 @@ M.core_filepicker.init = function(Y, options) {
 				current_time = new Date();
 				version_comment = 'Uploaded by ' + this.options.author + ' on ' + current_time.toLocaleDateString() + ' ' + current_time.toLocaleTimeString();
 				str += '<td class="mdl-left"><input type="text" name="comment" id="comment-'+client_id+'" value="' + version_comment + '" size="50"/></td></tr>';
+			str += '<tr>';          
+				
+				// Allow user to select content type
+				str += '<tr>';
+	            str += '<td class="mdl-right">Content Type: </td>';
+	            str += '<td class="mdl-left">';		
+				str += '<select name="content-type" id="select-content-type-'+client_id+'">';				
+				
+				andresco_content_types=this.options.contenttypes;
+				
+	            for (var j in andresco_content_types) {
+					if (andresco_content_types[j].key == 'unit-material') {
+						str += '<option value="'+andresco_content_types[j].key+'" selected="selected">'+andresco_content_types[j].value+'</option>';
+					}
+					else {
+						str += '<option value="'+andresco_content_types[j].key+'">'+andresco_content_types[j].value+'</option>';
+					}					
+	            }
+				str += '</select>';
+	            str += '</td>';
+	            str += '</tr>';
+
             }
             // END: Andresco
             str += '<td class="mdl-right"><label>'+M.str.repository.author+': </label></td>';
@@ -1491,12 +1521,14 @@ M.core_filepicker.init = function(Y, options) {
             var scope = this;
             // BEGIN: Andresco
 			// Set title to filename
+			if (this.active_repo.repo_type == 'andresco') {
 			Y.one('#'+id+'_file').on('change', function(e) {
 				filename = Y.one('#'+id+'_file').get('value');
 				filename = filename.replace('C:\\fakepath\\', '');
 				filename = filename.substr(0, filename.lastIndexOf('.')) || filename;
 				Y.one('#newname-'+client_id).set('value', filename);
 			}, this);
+			}	
             // END: Andresco
             Y.one('#'+id+'_action').on('click', function(e) {
                 e.preventDefault();
@@ -1514,6 +1546,7 @@ M.core_filepicker.init = function(Y, options) {
                 }
                 
                 // BEGIN: Andresco
+				if (this.active_repo.repo_type == 'andresco') {	
                 var filename = Y.one('#'+id+'_file').get('value');
                 
                 // Ensure that title is specified                
@@ -1526,8 +1559,8 @@ M.core_filepicker.init = function(Y, options) {
                 
                 var description = Y.one('#newdescription-'+client_id).get('value');
 	            this.set_moodle_form_fields(filename, title, description);
+				}
 	            // END: Andresco                                
-
                     scope.request({
                             scope: scope,
                             action:'upload',
@@ -1762,21 +1795,15 @@ M.core_filepicker.init = function(Y, options) {
             var r = this.active_repo;
             var str = '';
             var action = '';
-            var lastpage = r.pages;
-            var lastpagetext = r.pages;
-            if (r.pages == -1) {
-                lastpage = r.page + 1;
-                lastpagetext = M.str.moodle.next;
-            }
-            if (lastpage > 1) {
+            if(r.pages > 1) {
                 str += '<div class="fp-paging" id="paging-'+html_id+'-'+client_id+'">';
                 str += this.get_page_button(1)+'1</a> ';
 
                 var span = 5;
                 var ex = (span-1)/2;
 
-                if (r.page+ex>=lastpage) {
-                    var max = lastpage;
+                if (r.page+ex>=r.pages) {
+                    var max = r.pages;
                 } else {
                     if (r.page<span) {
                         var max = span;
@@ -1803,11 +1830,11 @@ M.core_filepicker.init = function(Y, options) {
                 }
 
                 // won't display upper boundary
-                if (max==lastpage) {
-                    str += this.get_page_button(lastpage)+lastpagetext+'</a>';
+                if (max==r.pages) {
+                    str += this.get_page_button(r.pages)+r.pages+'</a>';
                 } else {
                     str += this.get_page_button(max)+max+'</a>';
-                    str += ' ... '+this.get_page_button(lastpage)+lastpagetext+'</a>';
+                    str += ' ... '+this.get_page_button(r.pages)+r.pages+'</a>';
                 }
                 str += '</div>';
             }

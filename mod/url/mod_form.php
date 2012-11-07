@@ -24,6 +24,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Enhanced by Andresco
+ * http://code.google.com/p/andresco
+ *
+ * This is the mod/url/mod_form.php file delivered with Moodle 2.0
+ * with enhancements specific to Andresco.
+ * 
+ * @copyright 	2012+ Androgogic Pty Ltd
+ * @author		Praj Basnet <praj.basnet@androgogic.com>
+ * @since		2.0
+ *
+ **/
+
 defined('MOODLE_INTERNAL') || die;
 
 require_once ($CFG->dirroot.'/course/moodleform_mod.php');
@@ -113,8 +126,7 @@ class mod_url_mod_form extends moodleform_mod {
 
         //-------------------------------------------------------
         $mform->addElement('header', 'parameterssection', get_string('parametersheader', 'url'));
-        $mform->addElement('static', 'parametersinfo', '', get_string('parametersheader_help', 'url'));
-        $mform->setAdvanced('parametersinfo');
+
 
         if (empty($this->current->parameters)) {
             $parcount = 5;
