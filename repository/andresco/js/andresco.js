@@ -23,7 +23,13 @@ YUI(M.yui.loader).use('node', 'io', 'json-parse', function(Y) {
 	test_connection_button.on('click', function() {
 
 		var alfresco_url = Y.one('input#id_alfresco_url').get('value');
-		var connection_username = Y.one('input#id_connection_username').get('value');	
+		var connection_username = Y.one('input#id_connection_username').get('value');
+		if (Y.one('input#id_use_ssl') === null) {
+			var use_ssl = 0;
+		}	
+		else {
+		var use_ssl = Y.one('input#id_use_ssl').get('value');
+		}
 
 		test_alfresco_connection(alfresco_url, connection_username);
 		

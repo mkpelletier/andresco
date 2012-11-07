@@ -16,14 +16,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'repository_alfresco', language 'en', branch 'MOODLE_20_STABLE'
- *
- * @package   repository_alfresco
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
  * Language pack for Andresco strings.
  * 
  * Enhanced by Androgogic Pty Ltd
@@ -53,14 +45,28 @@ $string['connection_username'] = 'Connection User';
 $string['connection_password'] = 'Connection Password';
 $string['connection_password_encrypted'] = 'Password Encrypted?';
 $string['connection_password_help'] = 'To change, clear the connection password, re-type set "Password has been encrypted" to no.';
+
+$string['use_ssl'] = 'Use SSL';
+$string['use_ssl_help'] = 'If you are using SSL (https://) then set this to yes';
+
 $string['test_connection'] = 'Test Connection Settings';
 
 $string['starting_node_uuid'] = 'Starting Node UUID';
 $string['starting_node_uuid_help'] = 'UUID of the Node to start at in the Alfresco Repository. Blank means default to "Company Home"';
 
 $string['content_access_method'] = 'Content Access Method';
+
+$string['andresco_auth'] = 'Andresco authentication script';
+$string['andresco_auth_help'] = 'Specify the name of the andresco authentication script (e.g. auth.php)';
+
 $string['copy'] = 'Copy (allow download of content into Moodle or linking to content) ';
 $string['link'] = 'Link (allow linking to content only)';
+
+$string['versinoning_strategy'] = 'Versioning strategy';
+$string['updatetonew'] = 'All links automatically update to new version';
+$string['pointpermanently'] = 'All links point to selected version permanently';
+$string['userupdate'] = 'User chooses - default is auto update to new version';
+$string['userpoint'] = 'User chooses - default is selected version permanently';
 
 $string['unable_to_access_repository'] = 'Unable to access Alfresco. Please review repository settings and Alfresco status.';
 $string['upload_file'] = 'Upload File';
