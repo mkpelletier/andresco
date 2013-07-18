@@ -46,18 +46,18 @@ $string['connection_password'] = 'Connection Password';
 $string['connection_password_encrypted'] = 'Password Encrypted?';
 $string['connection_password_help'] = 'To change, clear the connection password, re-type set "Password has been encrypted" to no.';
 
-$string['use_ssl'] = 'Use SSL';
-$string['use_ssl_help'] = 'If you are using SSL (https://) then set this to yes';
-
 $string['test_connection'] = 'Test Connection Settings';
 
 $string['starting_node_uuid'] = 'Starting Node UUID';
-$string['starting_node_uuid_help'] = 'UUID of the Node to start at in the Alfresco Repository. Blank means default to "Company Home"';
+$string['starting_node_uuid_help'] = 'UUID of the Node to start at in the Alfresco Repository. 
+									  Blank means default to "Company Home". All searches are
+									  restricted to content within the starting node and its children.';
 
 $string['content_access_method'] = 'Content Access Method';
 
-$string['andresco_auth'] = 'Andresco authentication script';
-$string['andresco_auth_help'] = 'Specify the name of the andresco authentication script (e.g. auth.php)';
+$string['andresco_auth'] = 'Auth Script';
+$string['andresco_auth_help'] = 'Specify the name and relative path to the andresco authentication script 
+								 that should be appended to the base Alfresco URL (e.g. auth.php)';
 
 $string['copy'] = 'Copy (allow download of content into Moodle or linking to content) ';
 $string['link'] = 'Link (allow linking to content only)';
@@ -70,8 +70,31 @@ $string['userpoint'] = 'User chooses - default is selected version permanently';
 
 $string['unable_to_access_repository'] = 'Unable to access Alfresco. Please review repository settings and Alfresco status.';
 $string['upload_file'] = 'Upload File';
+$string['upload_folder'] = 'Create Folder';
+
+// Moodle 2.3+ Upload Form Renderer Language strings (files/renderer.php)
+$string['uploadfilename'] = 'Filename';
+$string['uploadfoldername'] = 'Folder name';
+$string['uploadtitle'] = 'Title';
+$string['uploaddescription'] = 'Description';
+$string['uploadfolder'] = 'Create this folder';
+$string['contenttype'] = 'Content Type';
 
 // Version information
 
 $androgogic_alfresco_link = '<a href="http://www.androgogic.com/alfresco" target="_blank">Androgogic\'s Moodle-Alfresco Integration</a>';
-$string['version_information'] = 'This is version {$a} of Andresco - ' . $androgogic_alfresco_link;
+$string['version_information'] = 'This is version 1.6.3 of Andresco - ' . $androgogic_alfresco_link;
+$string['view_on_share'] = 'View on alfresco share';
+
+//Error Messages
+$string['token_expire_error'] = 'Alfresco session expired';
+$string['readonly_message'] = 'Alfresco is in readonly mode.';
+
+$string['instancedisabled'] = 'Instance disabled';
+$string['instanceenabled'] = 'Instance enabled';
+$string['confirmdisable'] = 'Please confirm that this Alfresco repository should be disabled.';
+$string['confirmenable'] = 'Please confirm that this Alfresco repository should be enabled.';
+$string['disablerepository'] = 'Disable repository';
+$string['enablerepository'] = 'Enable repository';
+$string['actionrepository'] = 'Enable/Disable';
+

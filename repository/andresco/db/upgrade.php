@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,4 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->version = 2013062600;
+/**
+ * @param int $oldversion the version we are upgrading from
+ * @return bool result
+ */
+function xmldb_repository_andresco_upgrade($oldversion = 0) {
+    global $DB;
+    $dbman = $DB->get_manager();
+
+    $result = true;
+    if ($result && $oldversion >= 2013022800) {
+	    $table = new xmldb_table('repository_instances');
+	    $field = new xmldb_field('disable');
+	    if(!$dbman->field_exists($table, $field)) {
+	        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+	        $dbman->add_field($table, $field);
+	    }
+    }
+
+    return $result;
+}
+

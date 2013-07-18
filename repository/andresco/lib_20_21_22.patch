@@ -1,0 +1,4 @@
+528c528
+<     public static function instance_config_form($mform) {
+---
+>     public function instance_config_form($mform) {

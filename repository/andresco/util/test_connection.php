@@ -34,7 +34,6 @@ $connection_url = $_POST['alfresco_url'];
 $connection_username = $_POST['connection_username'];
 $connection_password = $_POST['connection_password'];
 $connection_password_encrypted = $_POST['connection_password_encrypted'];
-$use_ssl = $_POST['use_ssl'];
 
 if (isset($connection_url)) {
 
@@ -43,11 +42,6 @@ if (isset($connection_url)) {
 	curl_setopt($c, CURLOPT_URL, $connection_url);
 	curl_setopt($c, CURLOPT_RETURNTRANSFER, TRUE);
 	curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
-	if ($use_ssl == 1) {
-		// Additional cURL options for SSL
-		curl_setopt($c, CURLOPT_SSLVERSION, 3);
-		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, FALSE);
-	}
 	$connection_result = curl_exec($c);
 	if (curl_error($c)) {
 		error_log("Andresco connection " . curl_error($c));
@@ -84,7 +78,6 @@ if (isset($connection_url)) {
 			curl_setopt($c, CURLOPT_POSTFIELDS, $login_data);
 			curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
-			curl_setopt($c, CURLOPT_SSLVERSION, 3);
 			curl_setopt($c, CURLOPT_HTTPHEADER, array(
 				'Content-Type: application/json',
 		    	'Content-Length: ' . strlen($login_data)

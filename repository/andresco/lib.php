@@ -16,11 +16,14 @@
  *
  **/
 
+require_once($CFG->dirroot . '/repository/lib.php');
+
 class repository_andresco extends repository {
     private $ticket = null;
     private $user_session = null;
     private $store = null;
     private $alfresco;
+    private $current_node = null;
 
     public function __construct($repositoryid, $context = SYSCONTEXTID, $options = array()) {
         global $SESSION, $CFG;
@@ -80,11 +83,6 @@ class repository_andresco extends repository {
                     curl_setopt($c, CURLOPT_URL, $this->options['alfresco_url']);
                     curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 10);
-					if ($this->options['use_ssl'] == 1) {
-						// Additional cURL options for SSL
-						curl_setopt($c, CURLOPT_SSLVERSION, 3);
-						curl_setopt($c, CURLOPT_SSL_VERIFYPEER, FALSE);
-					}
                     $connection_result = curl_exec($c);
                     curl_close($c);
 
@@ -109,10 +107,11 @@ class repository_andresco extends repository {
             	// BEGIN: Andresco
             	// There was an exception using the login credentials provided.
             	// Disable the repository as it is not working.
+				error_log('The Andresco Repository is incorrectly configured. Exceptions follow this message.');
+				error_log($e->getMessage());				
             	$this->disabled = TRUE;
 				// END: Andresco
             }
-            $this->current_node = null;
         } else {
             $this->disabled = true;
         }
@@ -159,7 +158,7 @@ class repository_andresco extends repository {
 
 	/**
 	 * Generates a url for the target content in a format that redirects
-	 * to the Alfresco Moodle-Authentication script (moodleauth.php)
+	 * to the Alfresco Moodle-Authentication script (auth.php)
 	 * which takes care of things such as:
 	 *  - Authentication ticket generation
 	 *  - Verifying access to the content (and restricting access from
@@ -180,6 +179,32 @@ class repository_andresco extends repository {
 		$target_url = "$base_url/$alfresco_script?uuid=$node->id&filename=$filename";		
 		
         return $target_url;
+    }
+
+/**
+	 * Generates a url for the target content thumbnail in a format that redirects
+	 * to the Alfresco Moodle-Authentication script (auth.php)
+	 * which takes care of things such as:
+	 *  - Authentication ticket generation
+	 *  - Verifying access to the content (and restricting access from
+	 *	  non-Moodle, untrusted sources).
+	 *  - Retrieving the appropriate content (e.g. version).
+	 * 
+	 * @param		Alfresco node being accessed
+	 * @return		Alfresco content URL in Andresco format
+	 * 
+	 */	
+	
+    private function get_andresco_thumbnail_url($node) {
+		$base_url = substr($this->options['alfresco_url'], 0, strpos($this->options['alfresco_url'], '/alfresco/api'));
+		$thumbnailurl = $base_url.'/alfresco/s/api/node/workspace/SpacesStore/'.$node->id.'/content/thumbnails/doclib?c=queue&ph=true&alf_ticket='.$this->ticket;
+		return $thumbnailurl;
+    }
+    
+    private function get_andresco_share_url($node) {
+    	$base_url = substr($this->options['alfresco_url'], 0, strpos($this->options['alfresco_url'], '/alfresco/api'));
+		$shareurl = $base_url.'/share/page/document-details?nodeRef=workspace://SpacesStore/'.$node->id;
+		return $shareurl;
     }
 
     private function get_url($node) {
@@ -303,7 +328,10 @@ class repository_andresco extends repository {
                         'path'=>$child->child->id,
                         // Use the smaller folder image
                         //'thumbnail'=>$OUTPUT->pix_url('f/folder-32') . '',
-                        'thumbnail'=>$OUTPUT->pix_url('f/folder') . '',
+                        //'thumbnail' => $this->get_andresco_auth_thumbnail_url($child->child),
+                        'datemodified_f'=>date("d-m-Y h:i:s",strtotime($child->child->cm_modified)),
+                        'size'=>$child->child->cm_content->size,
+                        'thumbnail'=>$OUTPUT->pix_url('f/folder-64') . '',
                         'children'=>array());
                 } elseif ($child->child->type == $file_filter) {
                     $ret['list'][] = array('title'=>$child->child->cm_name,
@@ -311,7 +339,11 @@ class repository_andresco extends repository {
                         'description' => $child->child->cm_description,
                         // Use smaller file extension icons (not 32px size)
                         //'thumbnail' => $OUTPUT->pix_url(file_extension_icon($child->child->cm_name, 32))->out(false),
-                        'thumbnail' => $OUTPUT->pix_url(file_extension_icon($child->child->cm_name))->out(false),
+                        'thumbnail' => $this->get_andresco_thumbnail_url($child->child),
+                    	'content_share_link' => $this->get_andresco_share_url($child->child),
+                        'datemodified_f'=>date("d-m-Y h:i:s",strtotime($child->child->cm_modified)),
+                        'size'=>$child->child->cm_content->size,
+                        //'thumbnail' => $OUTPUT->pix_url(file_extension_icon($child->child->cm_name))->out(false),
                         'source'=>$child->child->id);
                         // END: Andresco
 
@@ -319,11 +351,14 @@ class repository_andresco extends repository {
             }
         } catch (Exception $e) {
             unset($SESSION->{$this->sessname});
-			
-			// BEGIN: Andresco		
+            // BEGIN: Andresco            
+	        $readonly_message = get_string('readonly_message', 'repository_andresco');
+            throw new Exception($readonly_message);	
+		
 			// Uncomment below to see the exception
 			// var_dump($e);
-			//$ret = $this->print_login();			
+			// $ret = $this->print_login();
+
 			// END: Andresco
 			
         }
@@ -373,14 +408,26 @@ class repository_andresco extends repository {
      * @param string $path path to a directory
      * @return array
      */
+
     public function get_file($uuid, $file = '') {
+    	try {
         $node = $this->user_session->getNode($this->store, $uuid);
-        $url = $this->get_url($node);
+        $url = $this->get_andresco_auth_url($node);
         $path = $this->prepare_file($file);
         $fp = fopen($path, 'w');
-        $c = new curl;
-        $c->download(array(array('url'=>$url, 'file'=>$fp)));
+        $ch = curl_init(str_replace(" ","%20",$url));//Here is the file we are downloading, replace spaces with %20
+        curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+        curl_setopt($ch, CURLOPT_FILE, $fp); // write curl response to file
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_exec($ch); // get curl response
+        curl_close($ch);
+        fclose($fp);
         return array('path'=>$path, 'url'=>$url);
+    }
+    	catch(Exception $e) {
+    		$error_message = get_string('token_expire_error', 'repository_andresco');
+    		throw new Exception($error_message);
+    	}
     }
 
     /**
@@ -389,6 +436,7 @@ class repository_andresco extends repository {
      * @param string $url the url of file
      * @return string
      */
+
     public function get_link($uuid) {
         $node = $this->user_session->getNode($this->store, $uuid);
 		// BEGIN: Andresco
@@ -427,15 +475,40 @@ class repository_andresco extends repository {
      * @param string $search_text
      * @return array
      */
-    public function search($search_text) {
-		global $OUTPUT; // Andresco
+
+    public function search($search_text, $page = 0) {
+        global $OUTPUT;
 		
         $space = optional_param('space', 'workspace://SpacesStore', PARAM_RAW);        
 		$currentStore = $this->user_session->getStoreFromString($space);
-		// BEGIN: Andresco
-		// Adjust search to be on name
-        $nodes = $this->user_session->query($currentStore, '@cm\:name:"' . $search_text . '"');
-		// END: Andresco
+
+        // We want to restrict search to the starting node specified in Andresco configuration if set.
+        // Otherwise, starting node will default to top level (CompanyHome)
+        if (isset($this->options['starting_node_uuid']) && strlen($this->options['starting_node_uuid']) > 0) {
+            $starting_node = $this->user_session->getNode($this->store, $this->options['starting_node_uuid']);
+        }
+        else {
+            $starting_node = false;
+        }
+        
+        // Build search syntax
+        $search_query = "";
+        // Set TEXT string to search
+        $search_query .= '+PATH:"/app:company_home/';
+
+        if ($starting_node) {            
+            $node_name = $starting_node->cm_name;
+            $node_name = str_replace(' ', '_x0020_', $node_name);            
+            $search_query .= 'cm:' . $node_name . '//."';    
+        }
+        // Add AND
+        $search_query .= " AND ";
+        // Add Search text
+        $search_query .= 'ALL:"' . $search_text . '"';        
+        
+        // Perform search and return matching nodes
+        $nodes = $this->user_session->query($currentStore,  $search_query);        		
+        
         $ret = array();
         $ret['list'] = array();
 		
@@ -466,7 +539,8 @@ class repository_andresco extends repository {
 				$ret['list'][] = array(
 					'title'=>$v->cm_name, 
 					'source'=>$v->id,
-					'thumbnail'=>$OUTPUT->pix_url(file_extension_icon($v->cm_name))->out(false)
+					//'thumbnail'=>$OUTPUT->pix_url(file_extension_icon($v->cm_name))->out(false)
+					'thumbnail' => $this->get_andresco_thumbnail_url($v)
 				);
 			}
 			// END: Andresco
@@ -489,7 +563,6 @@ class repository_andresco extends repository {
         	'connection_username', 
         	'connection_password', 
         	'connection_password_encrypted',
-			'use_ssl',
         	'starting_node_uuid', 
 			'andresco_auth',
             'content_access_method'
@@ -502,7 +575,7 @@ class repository_andresco extends repository {
      *
      * @return bool
      */
-    public function instance_config_form($mform) {
+    public static function instance_config_form($mform) {
     	
 		global $CFG, $PAGE; // Andresco: Added $PAGE global
 
@@ -556,11 +629,6 @@ class repository_andresco extends repository {
 		$mform->setDefault('connection_password_encrypted', 0);	
 		$mform->addElement('static', 'connection_password_help', '', get_string('connection_password_help', 'repository_andresco'));
 
-		// Use SSL option
-		$mform->addElement('selectyesno', 'use_ssl', get_string('use_ssl', 'repository_andresco'));
-		$mform->setDefault('use_ssl', 0);	
-		$mform->addElement('static', 'use_ssl_help', '', get_string('use_ssl_help', 'repository_andresco'));		
-		
         // Test Connection button
         $mform->addElement('static', '', '', '');
         $mform->addElement('button', 'test_connection', get_string('test_connection', 'repository_andresco'));
@@ -582,7 +650,7 @@ class repository_andresco extends repository {
 		$mform->addElement('select', 'content_access_method', get_string('content_access_method', 'repository_andresco'), $content_access_methods);
 
 		// Version information
-        $mform->addElement('static', 'version_information', '', get_string('version_information', 'repository_andresco', '1.5.2'));
+        $mform->addElement('static', 'version_information', '', get_string('version_information', 'repository_andresco'));
 
 		// END: Andresco
 		
@@ -638,17 +706,26 @@ class repository_andresco extends repository {
 	 */
 	
 	public function upload($saveas_filename, $maxbytes, $upload_uuid, $env) {
-
+		global $USER, $CFG, $SITE, $COURSE;
+		$temparray = array();
 		$file_name = $_FILES['repo_upload_file']['name'];
 		$file_tmp = $_FILES['repo_upload_file']['tmp_name'];
 		$file_type = $_FILES['repo_upload_file']['type'];
 		$file_size = $_FILES['repo_upload_file']['size'];
+		$itemid = $_REQUEST['itemid'];
+		
 		
 		$file_title = $_POST['title'];
 		$file_description = $_POST['description'];
 		$file_author = $_POST['author'];
 		$file_comment = $_POST['comment'];
-		
+	    $file_contenttype = $_POST['contenttype'];
+	    if(trim($file_contenttype) == '') {
+	    	$file_contenttype = $file_type;
+	    }
+		if($file_comment == "") {
+			$file_comment = "Version uploaded from ".$SITE->fullname." by user ".$USER->username." in course ".$COURSE->fullname." at ".date("Y-m-d H:i");
+		}
 		// Set the upload node to the node the user requested to upload to
 		// This is captured as the node the user is in when they click on 
 		// the upload button.		
@@ -686,7 +763,8 @@ class repository_andresco extends repository {
 		
 		if ($file_exists_as_node == TRUE) {
 			// Get URL for an existing node 
-			$url = $this->get_url($upload);	
+			//$url = $this->get_url($upload);	
+            $url = $this->get_andresco_auth_url($upload);
 		}
 		
 		// Set meta-data
@@ -700,7 +778,7 @@ class repository_andresco extends repository {
 		
 		// Upload file to alfresco
 		$contentData = new ContentData($upload, "cm:content");
-		$contentData->mimetype = $file_type;
+		$contentData->mimetype = $file_contenttype;
 		$contentData->size = $file_size;
 		$contentData->encoding = 'UTF-8';
 		$contentData->writeContentFromFile($file_tmp);
@@ -712,10 +790,12 @@ class repository_andresco extends repository {
 		// Create version after save
 		// Note only minor versioning available. Major versioning not implemented yet.
 		$upload->createVersion($file_comment, false);
+		$temparray['success'] = "true";
 		
 		if ($file_exists_as_node == FALSE) {
 			// Get URL for a new node
-			$url = $this->get_url($upload);
+			//$url = $this->get_url($upload);
+            $url = $this->get_andresco_auth_url($upload);
 		}	
 		
 		if ($env == 'url' || $env == 'editor') {
@@ -725,11 +805,35 @@ class repository_andresco extends repository {
 	        $link['type'] = 'link';
 			$link['url'] = $url; 
 	       	echo json_encode($link);
-			die;
+		}
+		else if ($env == 'filemanager') {
+			$context = context_user::instance($USER->id);
+			$file_info = $this->get_file($upload->id);
+			$fs = get_file_storage();
+			$record = new stdClass();
+			$record->filearea = 'draft';
+        	$record->component = 'user';
+        	$record->filepath = "/";
+        	$record->itemid   = $itemid;
+        	$record->license  = $license;
+        	$record->author   = $file_author;
+        	$record->source = self::build_source_field($file_name);
+        	$record->filename = $file_name;
+        	$record->contextid = $context->id;
+        	$record->userid    = $USER->id;
+        	$stored_file = $fs->create_file_from_pathname($record, $_FILES['repo_upload_file']['tmp_name']);
+            return array(
+                'url' => moodle_url::make_draftfile_url($record->itemid, "/", $record->filename)->out(false),
+                'id'=>$itemid,
+                'file'=>$file_name,
+            	'type' => 'file',
+            	'title' => $file_title,
+            	'description' => $file_description
+            );
 		}
 		else {
 			// Return the file
-			return $this->get_file($upload->cm_id);
+			return $this->get_file($upload->id);
 			echo json_encode($file);
 			die;
 		}
@@ -737,4 +841,80 @@ class repository_andresco extends repository {
 	}
 	// END: Andresco
 	
+	/**	 
+	 * Process add folder request and upload to the relevant node in Alfresco.
+     *
+	 * @param string $folder_name
+	 * @param string $title
+	 * @param string $author
+	 * @param string $upload_uuid
+	 * @param string $env
+	 */
+
+	public function uploadfolder($folder_name, $title, $author, $upload_uuid, $env) {
+		global $SITE, $USER, $COURSE;
+		$folder_filter = "{http://www.alfresco.org/model/content/1.0}folder";
+		$folder_title = $_POST['title'];
+		$folder_description = $_POST['description'];
+		$folder_author = $_POST['author'];
+		$folder_comment = $_POST['comment'];
+		if($folder_comment == "") {
+			$folder_comment = "Version uploaded from ".$SITE->fullname." by user ".$USER->username." in course ".$COURSE->fullname." at ".date("Y-m-d H:i");
+		}
+		
+		// Set the upload node to the node the user requested to upload to
+		// This is captured as the node the user is in when they click on 
+		// the upload button.		
+		$upload_node = $this->user_session->getNode($this->store, $upload_uuid);
+		
+		// Turn off auto version on the upload node
+		$upload_node->cm_autoVersion = false;
+		$folder_exists_as_node = FALSE;
+		$upload = NULL;
+		
+ 	    // Is there already a folder with this folder name in this folder node?
+		foreach ($upload_node->children as $child) {
+			$child_node = $child->child;
+			if ($folder_name == $child_node->cm_name && $child_node->type == $folder_filter) {
+				$folder_exists_as_node = TRUE;
+				$upload = $child_node;
+				// Turn off auto version on the upload node
+				// auto-versioning breaks creaitng individual versions through upload.
+				$upload->cm_autoVersion = false;
+					
+			break; // Stop looping we have a match
+			}
+		}
+		
+		if ($folder_exists_as_node == FALSE && !(isset($upload))) {
+			// No matching children (files in folder) create a new child and version it
+		    $upload = $upload_node->createChild('cm_folder', 'cm_contains', $folder_name);
+		}
+		
+	    if ($file_exists_as_node == FALSE) {
+			// Get URL for a new node
+			//$url = $this->get_url($upload);
+            $url = $this->get_andresco_auth_url($upload);
+		}
+		
+		// Set meta-data
+		$upload->cm_name = $folder_name;
+		$upload->cm_title = $folder_title;
+		$upload->cm_description = $folder_description;
+		$upload->cm_owner = $folder_author;
+		$upload->cm_author = $folder_author;
+		$upload->cm_creator = $folder_author;
+		$upload->cm_modifier = $folder_author;
+		
+		// Save changes		
+		$this->user_session->save();
+		// Create version after save
+		// Note only minor versioning available. Major versioning not implemented yet.
+		$upload->createVersion($file_comment, false);
+		echo  json_encode(array('success' => true));
+		die;
+		
+	}
+	
 }
+
