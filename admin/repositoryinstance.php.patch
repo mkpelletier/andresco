@@ -1,89 +1,102 @@
-30,33d29
-< // BEGIN: Andresco
-< $disable  = optional_param('disable', 0, PARAM_INT);
-< $enable  = optional_param('enable', 0, PARAM_INT);
-< // END: Andresco
-47,53c43
-< // BEGIN: Andresco
-< else if ($disable) {
-<     $pagename = 'repositorydisable';
-< } else if ($enable) {
-<     $pagename = 'repositoryenable';
-< }
-< // END: Andresco
----
+16a17,28
+> /**
+>  * Enhanced by Andresco
+>  * http://www.androgogic.com/andresco
+>  * 
+>  * This is the files/render.php file delivered with Moodle 2.5
+>  * with enhancements specific to Andresco.
+>  * 
+>  * @copyright  2012+ Androgogic Pty Ltd
+>  * @since      2.5
+>  *
+>  **/
 > 
-171,243d160
-< // BEGIN: Andresco
-< else if (!empty($disable)) {
-<     $instance = repository::get_instance($disable);
-<     if ($instance->readonly) {
-<         // If you try to delete an instance set as readonly, display an error message.
-<         throw new repository_exception('readonlyinstance', 'repository');
-<     } else if ($instance->instance->contextid != $context->id) {
-<         throw new repository_exception('nopermissiontoaccess', 'repository_andresco');
-<     }
-<     if ($sure) {
-<         if ($instance->disable($downloadcontents)) {
-<             $disablestr = get_string('instancedisabled', 'repository_andresco');
-<             redirect($parenturl, $disablestr, 3);
-<         } else {
-<             print_error('instancenotdisabled', 'repository_andresco', $parenturl);
-<         }
-<         exit;
-<     }
-<     echo $OUTPUT->header();
-<     echo $OUTPUT->box_start('generalbox', 'notice');
-<     $continueurl = new moodle_url($baseurl, array(
-<         'type' => $type,
-<         'disable' => $disable,
-<         'sure' => 'yes',
-<     ));
-<     $continueanddownloadurl = new moodle_url($continueurl, array(
-<         'downloadcontents' => 1
-<     ));
-<     $message = get_string('confirmdisable', 'repository_andresco', $instance->name);
-<     echo html_writer::tag('p', $message);
+29a42,45
+> // BEGIN: Andresco
+> $disable  = optional_param('disable', 0, PARAM_INT);
+> $enable  = optional_param('enable', 0, PARAM_INT);
+> // END: Andresco
+43c59,65
 < 
-<     echo $OUTPUT->single_button($continueurl, get_string('continueuninstall', 'repository'));
-<     echo $OUTPUT->single_button($parenturl, get_string('cancel'));
-< 
-<     echo $OUTPUT->box_end();
-<     $return = false;
-< } else if (!empty($enable)) {
-<     $instance = repository::get_instance($enable);
-<     if ($instance->readonly) {
-<         // If you try to delete an instance set as readonly, display an error message.
-<         throw new repository_exception('readonlyinstance', 'repository');
-<     } else if ($instance->instance->contextid != $context->id) {
-<         throw new repository_exception('nopermissiontoaccess', 'repository');
-<     }
-<     if ($sure) {
-<         if ($instance->enable($downloadcontents)) {
-<             $disablestr = get_string('instanceenabled', 'repository_andresco');
-<             redirect($parenturl, $disablestr, 3);
-<         } else {
-<             print_error('instancenotenabled', 'repository_andresco', $parenturl);
-<         }
-<         exit;
-<     }
-<     echo $OUTPUT->header();
-<     echo $OUTPUT->box_start('generalbox', 'notice');
-<     $continueurl = new moodle_url($baseurl, array(
-<         'type' => $type,
-<         'enable' => $enable,
-<         'sure' => 'yes',
-<     ));
-<     $continueanddownloadurl = new moodle_url($continueurl, array(
-<         'downloadcontents' => 1
-<     ));
-<     $message = get_string('confirmenable', 'repository_andresco', $instance->name);
-<     echo html_writer::tag('p', $message);
-< 
-<     echo $OUTPUT->single_button($continueurl, get_string('continueuninstall', 'repository'));
-<     echo $OUTPUT->single_button($parenturl, get_string('cancel'));
-< 
-<     echo $OUTPUT->box_end();
-<     $return = false;
-< }
-< // END: Andresco
+---
+> // BEGIN: Andresco
+> else if ($disable) {
+>     $pagename = 'repositorydisable';
+> } else if ($enable) {
+>     $pagename = 'repositoryenable';
+> }
+> // END: Andresco
+160a183,255
+> // BEGIN: Andresco
+> else if (!empty($disable)) {
+>     $instance = repository::get_instance($disable);
+>     if ($instance->readonly) {
+>         // If you try to delete an instance set as readonly, display an error message.
+>         throw new repository_exception('readonlyinstance', 'repository');
+>     } else if ($instance->instance->contextid != $context->id) {
+>         throw new repository_exception('nopermissiontoaccess', 'repository_andresco');
+>     }
+>     if ($sure) {
+>         if ($instance->disable($downloadcontents)) {
+>             $disablestr = get_string('instancedisabled', 'repository_andresco');
+>             redirect($parenturl, $disablestr, 3);
+>         } else {
+>             print_error('instancenotdisabled', 'repository_andresco', $parenturl);
+>         }
+>         exit;
+>     }
+>     echo $OUTPUT->header();
+>     echo $OUTPUT->box_start('generalbox', 'notice');
+>     $continueurl = new moodle_url($baseurl, array(
+>         'type' => $type,
+>         'disable' => $disable,
+>         'sure' => 'yes',
+>     ));
+>     $continueanddownloadurl = new moodle_url($continueurl, array(
+>         'downloadcontents' => 1
+>     ));
+>     $message = get_string('confirmdisable', 'repository_andresco', $instance->name);
+>     echo html_writer::tag('p', $message);
+> 
+>     echo $OUTPUT->single_button($continueurl, get_string('continueuninstall', 'repository'));
+>     echo $OUTPUT->single_button($parenturl, get_string('cancel'));
+> 
+>     echo $OUTPUT->box_end();
+>     $return = false;
+> } else if (!empty($enable)) {
+>     $instance = repository::get_instance($enable);
+>     if ($instance->readonly) {
+>         // If you try to delete an instance set as readonly, display an error message.
+>         throw new repository_exception('readonlyinstance', 'repository');
+>     } else if ($instance->instance->contextid != $context->id) {
+>         throw new repository_exception('nopermissiontoaccess', 'repository');
+>     }
+>     if ($sure) {
+>         if ($instance->enable($downloadcontents)) {
+>             $disablestr = get_string('instanceenabled', 'repository_andresco');
+>             redirect($parenturl, $disablestr, 3);
+>         } else {
+>             print_error('instancenotenabled', 'repository_andresco', $parenturl);
+>         }
+>         exit;
+>     }
+>     echo $OUTPUT->header();
+>     echo $OUTPUT->box_start('generalbox', 'notice');
+>     $continueurl = new moodle_url($baseurl, array(
+>         'type' => $type,
+>         'enable' => $enable,
+>         'sure' => 'yes',
+>     ));
+>     $continueanddownloadurl = new moodle_url($continueurl, array(
+>         'downloadcontents' => 1
+>     ));
+>     $message = get_string('confirmenable', 'repository_andresco', $instance->name);
+>     echo html_writer::tag('p', $message);
+> 
+>     echo $OUTPUT->single_button($continueurl, get_string('continueuninstall', 'repository'));
+>     echo $OUTPUT->single_button($parenturl, get_string('cancel'));
+> 
+>     echo $OUTPUT->box_end();
+>     $return = false;
+> }
+> // END: Andresco

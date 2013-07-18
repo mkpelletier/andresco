@@ -1,57 +1,56 @@
-27,39d26
-< /**
-<  * Enhanced by Andresco
-<  * http://code.google.com/p/andresco
-<  * 
-<  * This is the repository/repository_ajax.php file delivered with Moodle 2.4
-<  * with enhancements specific to Andresco.
-<  * 
-<  * @copyright 	2012+ Androgogic Pty Ltd
-<  * @author		Praj Basnet <praj.basnet@androgogic.com>
-<  * @since		2.4
-<  *
-<  **/
-<  
-67,70d53
-< // BEGIN: Andresco
-< $folder_name = optional_param('repo_upload_folder','',PARAM_TEXT); //folder name
-< $upload_uuid = optional_param('upload_uuid', '', PARAM_TEXT);
-< // END: Andresco
-148,159d130
-< 			// BEGIN: Andresco
-< 			// Repurpose the page option to return the content access method
-< 			// 100 = copy, 200 = link (using numbers as page needs to be a number).
-< 			if (isset($repo->options['content_access_method'])) {
-< 				if ($repo->options['content_access_method'] == 'copy') {
-< 					$listing['page'] = 100;
-< 				}
-< 				else {
-< 					$listing['page'] = 200;
-< 				}
-< 			}
-< 			// END: Andresco			
-354,357c325
-<         // BEGIN: Andresco
-<         // Add upload target UUID as a parameter to upload		
-<         $result = $repo->upload($saveas_filename, $maxbytes, $upload_uuid, $env);        		
-<         // END: Andresco
+26a27,38
+> /**
+>  * Enhanced by Andresco
+>  * http://www.androgogic.com/andresco
+>  * 
+>  * This is the repository/repository_ajax.php file delivered with Moodle 2.4
+>  * with enhancements specific to Andresco.
+>  * 
+>  * @copyright 	2012+ Androgogic Pty Ltd
+>  * @since		2.5
+>  *
+>  **/
+>  
+53a66,69
+> // BEGIN: Andresco
+> $folder_name = optional_param('repo_upload_folder','',PARAM_TEXT); //folder name
+> $upload_uuid = optional_param('upload_uuid', '', PARAM_TEXT);
+> // END: Andresco
+129a146,157
+> 			// BEGIN: Andresco
+> 			// Repurpose the page option to return the content access method
+> 			// 100 = copy, 200 = link (using numbers as page needs to be a number).
+> 			if (isset($repo->options['content_access_method'])) {
+> 				if ($repo->options['content_access_method'] == 'copy') {
+> 					$listing['page'] = 100;
+> 				}
+> 				else {
+> 					$listing['page'] = 200;
+> 				}
+> 			}
+> 			// END: Andresco			
+324c352,355
+<         $result = $repo->upload($saveas_filename, $maxbytes);
 ---
->         $result = $repo->upload($saveas_filename, $maxbytes);
-360,364d327
-<     // BEGIN: Andresco    
-<     case 'uploadfolder':
-<     	$result = $repo->uploadfolder($folder_name, $saveas_filename, $author, $upload_uuid, $env);
-<     	echo json_encode($upload_result);
-<     	break;
-366,376d328
-< 	case 'uploadform':
-< 		$upload_result = $repo->print_upload();
-< 		$upload_result['repo_id'] = $repo_id;
-< 		echo json_encode($upload_result);
-< 		break;
-< 	case 'uploadfolderform':
-< 		$upload_result = $repo->print_upload();
-< 		$upload_result['repo_id'] = $repo_id;
-< 		echo json_encode($upload_result);
-< 		die;
-<     // END: Andresco		
+>         // BEGIN: Andresco
+>         // Add upload target UUID as a parameter to upload		
+>         $result = $repo->upload($saveas_filename, $maxbytes, $upload_uuid, $env);        		
+>         // END: Andresco
+326a358,362
+>     // BEGIN: Andresco    
+>     case 'uploadfolder':
+>     	$result = $repo->uploadfolder($folder_name, $saveas_filename, $author, $upload_uuid, $env);
+>     	echo json_encode($upload_result);
+>     	break;
+327a364,374
+> 	case 'uploadform':
+> 		$upload_result = $repo->print_upload();
+> 		$upload_result['repo_id'] = $repo_id;
+> 		echo json_encode($upload_result);
+> 		break;
+> 	case 'uploadfolderform':
+> 		$upload_result = $repo->print_upload();
+> 		$upload_result['repo_id'] = $repo_id;
+> 		echo json_encode($upload_result);
+> 		die;
+>     // END: Andresco		

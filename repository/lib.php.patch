@@ -1,256 +1,66 @@
-26,38d25
-<  /**
-<   * Enhanced by Andresco
-<   * http://code.google.com/p/andresco
-<   * 
-<   * This is the repository/lib.php file delivered with Moodle 2.4
-<   * with enhancements specific to Andresco.
-<   * 
-<   * @copyright 	2012+ Androgogic Pty Ltd
-<   * @author		Praj Basnet <praj.basnet@androgogic.com>
-<   * @since		2.4
-<   *
-<   **/
-<  
-970,972c957
-<             // BEGIN: Andresco
-<             $sql .= " AND (r.visible = 1) AND (i.disable = '0')";
-<             // END: Andresco
+25a26,37
+>  /**
+>   * Enhanced by Andresco
+>   * http://www.androgogic.com/andresco
+>   * 
+>   * This is the repository/lib.php file delivered with Moodle 2.5
+>   * with enhancements specific to Andresco.
+>   * 
+>   * @copyright 	2012+ Androgogic Pty Ltd
+>   * @since	2.5
+>   *
+>   **/
+>  
+1065,1066c1077,1080
+<         if ($args['onlyvisible'] == true) {
+<             $sql .= " AND r.visible = 1";
 ---
->             $sql .= " AND (r.visible = 1)";
-1034,1046d1018
-<                 // BEGIN: Andresco                
-<                 if ($repository->options['type'] == 'andresco') {
-<                 	// If the content access method is set to link (not copy)
-<                     if ($repository->options['content_access_method'] == 'link') {
-<                     	// Disable file internal when using link option as that means store the file
-< 		        // within Moodle file repository (and not link to an external URL)
-<                         if (isset($args['return_types']) and $args['return_types'] == FILE_INTERNAL) {
-<                         	$repository->disabled = TRUE;
-<                         }
-<                     }					
-<                 }                
-<                 // END: Andresco		
-< 
-1551,1553d1522
-<         // BEGIN: Andresco
-<         $actionstr = get_string('actionrepository', 'repository_andresco');
-<         // END: Andresco
-1568,1570c1537
-<         // BEGIN: Andresco
-<         $table->head = array($namestr, $pluginstr, $settingsstr, $deletestr, $actionstr);
-<         // END: Andresco
+>         if ($onlyvisible == true) {
+>             // BEGIN: Andresco
+>             $sql .= " AND (r.visible = 1) AND (i.disable = '0')";
+>             // END: Andresco
+1104a1119,1131
+>             // BEGIN: Andresco                
+>             if ($repository->options['type'] == 'andresco') {
+>             	// If the content access method is set to link (not copy)
+>                 if ($repository->options['content_access_method'] == 'link') {
+>                 	// Disable file internal when using link option as that means store the file
+>         	        // within Moodle file repository (and not link to an external URL)
+>                     if (isset($args['return_types']) and $args['return_types'] == FILE_INTERNAL) {
+>                     	$repository->disabled = TRUE;
+>                     }
+>                 }					
+>             }                
+>             // END: Andresco		
+> 
+1587a1615,1618
+>         // BEGIN: Andresco
+>         $actionstr = get_string('actionrepository', 'repository_andresco');
+>         // END: Andresco
+>         
+1627a1659,1675
+>                 // BEGIN: Andresco
+>                 $actionurl = "";
+>                 if(!$i->instance->disable){
+>                     $disablestr = get_string('disable');
+>                     $disable = '';
+>                     $disableurl = new moodle_url($baseurl);
+>                     $disableurl->param('disable', $i->id);
+>                     $disableurl->param('type', $i->options['type']);
+>                     $actionurl .= html_writer::link($disableurl, $disablestr);
+>                 } else {
+>                     $enablestr = get_string('enable');
+> 		            $enableurl = new moodle_url($baseurl);
+>                     $enableurl->param('enable', $i->id);
+>                     $enableurl->param('type', $i->options['type']);
+>                     $actionurl .= html_writer::link($enableurl, $enablestr);
+>                 }
+>                 // END: Andresco
+1631c1679,1681
+<             $table->data[] = array(format_string($i->name), $type->get_readablename(), $settings, $delete);
 ---
->         $table->head = array($namestr, $pluginstr, $settingsstr, $deletestr);
-1595,1611d1561
-<                 // BEGIN: Andresco
-<                 $actionurl = "";
-<                 if(!$i->instance->disable){
-<                     $disablestr = get_string('disable');
-<                     $disable = '';
-<                     $disableurl = new moodle_url($baseurl);
-<                     $disableurl->param('disable', $i->id);
-<                     $disableurl->param('type', $i->options['type']);
-<                     $actionurl .= html_writer::link($disableurl, $disablestr);
-<                 } else{
-<                     $enablestr = get_string('enable');
-< 		    $enableurl = new moodle_url($baseurl);
-<                     $enableurl->param('enable', $i->id);
-<                     $enableurl->param('type', $i->options['type']);
-<                     $actionurl .= html_writer::link($enableurl, $enablestr);
-<                 }
-<                 // END: Andresco
-1615,1617c1565
-<             // BEGIN: Andresco
-<             $table->data[] = array(format_string($i->name), $type->get_readablename(), $settings, $delete, $actionurl);
-<             // END: Andresco
----
->             $table->data[] = array(format_string($i->name), $type->get_readablename(), $settings, $delete);
-2007,2056d1954
-<     // BEGIN: Andresco
-<     
-<     /**
-<      * disable a repository instance
-<      *
-<      * @param bool $downloadcontents
-<      * @return bool
-<      */
-<      
-<     final public function disable($downloadcontents = false) {
-<         global $DB;
-<         if ($downloadcontents) {
-<             $this->convert_references_to_local();
-<         }
-<         try {
-<             $r = new stdClass();
-<             $r->id   = $this->id;
-<             $r->disable = 1;
-<             $DB->update_record('repository_instances', $r);
-<         } catch (dml_exception $ex) {
-<             return false;
-<         }
-<         return true;
-<     }
-<     
-<     /**
-<      * enable a repository instance
-<      *
-<      * @param bool $downloadcontents
-<      * @return bool
-<      */
-< 
-<     final public function enable($downloadcontents = false) {
-<         global $DB;
-<         if ($downloadcontents) {
-<             $this->convert_references_to_local();
-<         }
-<         try {
-<             $r = new stdClass();
-<             $r->id   = $this->id;
-<             $r->disable = 0;
-<             $DB->update_record('repository_instances', $r);
-<         } catch (dml_exception $ex) {
-<             return false;
-<         }
-<         return true;
-<     }
-<     
-<     //END : ANDRESCO    
-< 
-2281,2285c2179
-<                     // BEGIN: Andresco                
-<                     //$file['icon'] = $OUTPUT->pix_url(file_extension_icon($filename, 24))->out(false);
-<                     // Set the file icon
-<                     $file['icon'] = $list[$i]['thumbnail'];
-<                     // END: Andresco
----
->                     $file['icon'] = $OUTPUT->pix_url(file_extension_icon($filename, 24))->out(false);
-2524a2419,2426
->                 // Remember original file source field.
->                 $source = @unserialize($file->get_source());
->                 if ($tempfile->is_external_file()) {
->                     // New file is a reference. Check that existing file does not have any other files referencing to it
->                     if (isset($source->original) && $fs->search_references_count($source->original)) {
->                         return (object)array('error' => get_string('errordoublereference', 'repository'));
->                     }
->                 }
-2528a2431,2438
->                 // Preserve original file location (stored in source field) for handling references
->                 if (isset($source->original)) {
->                     if (!($newfilesource = @unserialize($newfile->get_source()))) {
->                         $newfilesource = new stdClass();
->                     }
->                     $newfilesource->original = $source->original;
->                     $newfile->set_source(serialize($newfilesource));
->                 }
-2537a2448,2543
->      * Updates a file in draft filearea.
->      *
->      * This function can only update fields filepath, filename, author, license.
->      * If anything (except filepath) is updated, timemodified is set to current time.
->      * If filename or filepath is updated the file unconnects from it's origin
->      * and therefore all references to it will be converted to copies when
->      * filearea is saved.
->      *
->      * @param int $draftid
->      * @param string $filepath path to the directory containing the file, or full path in case of directory
->      * @param string $filename name of the file, or '.' in case of directory
->      * @param array $updatedata array of fields to change (only filename, filepath, license and/or author can be updated)
->      * @throws moodle_exception if for any reason file can not be updated (file does not exist, target already exists, etc.)
->      */
->     public static function update_draftfile($draftid, $filepath, $filename, $updatedata) {
->         global $USER;
->         $fs = get_file_storage();
->         $usercontext = context_user::instance($USER->id);
->         // make sure filename and filepath are present in $updatedata
->         $updatedata = $updatedata + array('filepath' => $filepath, 'filename' => $filename);
->         $filemodified = false;
->         if (!$file = $fs->get_file($usercontext->id, 'user', 'draft', $draftid, $filepath, $filename)) {
->             if ($filename === '.') {
->                 throw new moodle_exception('foldernotfound', 'repository');
->             } else {
->                 throw new moodle_exception('filenotfound', 'error');
->             }
->         }
->         if (!$file->is_directory()) {
->             // This is a file
->             if ($updatedata['filepath'] !== $filepath || $updatedata['filename'] !== $filename) {
->                 // Rename/move file: check that target file name does not exist.
->                 if ($fs->file_exists($usercontext->id, 'user', 'draft', $draftid, $updatedata['filepath'], $updatedata['filename'])) {
->                     throw new moodle_exception('fileexists', 'repository');
->                 }
->                 if (($filesource = @unserialize($file->get_source())) && isset($filesource->original)) {
->                     unset($filesource->original);
->                     $file->set_source(serialize($filesource));
->                 }
->                 $file->rename($updatedata['filepath'], $updatedata['filename']);
->                 // timemodified is updated only when file is renamed and not updated when file is moved.
->                 $filemodified = $filemodified || ($updatedata['filename'] !== $filename);
->             }
->             if (array_key_exists('license', $updatedata) && $updatedata['license'] !== $file->get_license()) {
->                 // Update license and timemodified.
->                 $file->set_license($updatedata['license']);
->                 $filemodified = true;
->             }
->             if (array_key_exists('author', $updatedata) && $updatedata['author'] !== $file->get_author()) {
->                 // Update author and timemodified.
->                 $file->set_author($updatedata['author']);
->                 $filemodified = true;
->             }
->             // Update timemodified:
->             if ($filemodified) {
->                 $file->set_timemodified(time());
->             }
->         } else {
->             // This is a directory - only filepath can be updated for a directory (it was moved).
->             if ($updatedata['filepath'] === $filepath) {
->                 // nothing to update
->                 return;
->             }
->             if ($fs->file_exists($usercontext->id, 'user', 'draft', $draftid, $updatedata['filepath'], '.')) {
->                 // bad luck, we can not rename if something already exists there
->                 throw new moodle_exception('folderexists', 'repository');
->             }
->             $xfilepath = preg_quote($filepath, '|');
->             if (preg_match("|^$xfilepath|", $updatedata['filepath'])) {
->                 // we can not move folder to it's own subfolder
->                 throw new moodle_exception('folderrecurse', 'repository');
->             }
+>             // BEGIN: Andresco
+>             $table->data[] = array(format_string($i->name), $type->get_readablename(), $settings, $delete, $actionurl);
+>             // END: Andresco
+2079a2130
 > 
->             // If directory changed the name, update timemodified.
->             $filemodified = (basename(rtrim($file->get_filepath(), '/')) !== basename(rtrim($updatedata['filepath'], '/')));
-> 
->             // Now update directory and all children.
->             $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftid);
->             foreach ($files as $f) {
->                 if (preg_match("|^$xfilepath|", $f->get_filepath())) {
->                     $path = preg_replace("|^$xfilepath|", $updatedata['filepath'], $f->get_filepath());
->                     if (($filesource = @unserialize($f->get_source())) && isset($filesource->original)) {
->                         // unset original so the references are not shown any more
->                         unset($filesource->original);
->                         $f->set_source(serialize($filesource));
->                     }
->                     $f->rename($path, $f->get_filename());
->                     if ($filemodified && $f->get_filepath() === $updatedata['filepath'] && $f->get_filename() === $filename) {
->                         $f->set_timemodified(time());
->                     }
->                 }
->             }
->         }
->     }
-> 
->     /**
-2798a2805
-> 
-2808a2816,2819
->         if ($instance) {
->             $sql .= ' AND i.id != :instanceid';
->             $params['instanceid'] = $instance->id;
->         }
-2962,2967d2972
-< 	// BEGIN: Andresco 
-< 	// Generate list of content types
-< 	require_once('andresco/util/content_types.php');	
-< 	$return->contenttypes = andresco_content_types();
-< 	// END: Andresco
-< 

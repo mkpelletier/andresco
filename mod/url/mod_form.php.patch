@@ -1,30 +1,34 @@
-27,39d26
-<  /**
-<   * Enhanced by Andresco
-<   * http://code.google.com/p/andresco
-<   * 
-<   * This is the mod/url/mod_form.php file delivered with Moodle 2.4
-<   * with enhancements specific to Andresco.
-<   * 
-<   * @copyright  2012+ Androgogic Pty Ltd
-<   * @author     Praj Basnet <praj.basnet@androgogic.com>
-<   * @since      2.4
-<   *
-<   **/
-< 
-52,60d38
-<         // BEGIN: Andresco
-<         // Put content section before general section
-<         //-------------------------------------------------------
-<         $mform->addElement('header', 'content', get_string('contentheader', 'url'));
-<         $mform->addElement('url', 'externalurl', get_string('externalurl', 'url'), array('size'=>'60'), array('usefilepicker'=>true));
-<         $mform->addRule('externalurl', null, 'required', null, 'client');
-<         //-------------------------------------------------------
-<         // END: Andresco
-<         
-72a51,55
+26a27,38
+>  /**
+>   * Enhanced by Andresco
+>   * http://www.androgogic.com/andresco
+>   * 
+>   * This is the mod/url/mod_form.php file delivered with Moodle 2.5
+>   * with enhancements specific to Andresco.
+>   * 
+>   * @copyright  2012+ Androgogic Pty Ltd
+>   * @since      2.5
+>   *
+>   **/
+> 
+38a51,61
+>         // BEGIN: Andresco
+>         // Put content section before general section
 >         //-------------------------------------------------------
 >         $mform->addElement('header', 'content', get_string('contentheader', 'url'));
 >         $mform->addElement('url', 'externalurl', get_string('externalurl', 'url'), array('size'=>'60'), array('usefilepicker'=>true));
+>         $mform->setType('externalurl', PARAM_URL);
 >         $mform->addRule('externalurl', null, 'required', null, 'client');
+>         $mform->setExpanded('content');
 >         //-------------------------------------------------------
+>         // END: Andresco
+> 
+51,58d73
+<         //-------------------------------------------------------
+<         $mform->addElement('header', 'content', get_string('contentheader', 'url'));
+<         $mform->addElement('url', 'externalurl', get_string('externalurl', 'url'), array('size'=>'60'), array('usefilepicker'=>true));
+<         $mform->setType('externalurl', PARAM_URL);
+<         $mform->addRule('externalurl', null, 'required', null, 'client');
+<         $mform->setExpanded('content');
+< 
+<         //-------------------------------------------------------

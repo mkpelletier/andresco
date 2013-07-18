@@ -1,308 +1,304 @@
-47,59d46
-<  /**
-<   * Enhanced by Andresco
-<   * http://code.google.com/p/andresco
-<   * 
-<   * This is the repository/filepicker.js file delivered with Moodle 2.4
-<   * with enhancements specific to Andresco.
-<   * 
-<   * @copyright  2012+ Androgogic Pty Ltd
-<   * @author     Praj Basnet <praj.basnet@androgogic.com>
-<   * @since      2.4
-<   *
-<   **/
-< 
-793c780
-<             this.msg_dlg_node.one('.fp-msg-text').setContent(msg);
----
->             this.msg_dlg_node.one('.fp-msg-text').setContent(Y.Escape.html(msg));
-1040,1091d1026
-< 
-< 		// BEGIN: Andresco
-< 		// Sets Moodle form fields based on the file name, title, and description
-< 		set_moodle_form_fields: function(filename, title, description) {
-< 			
-< 			// Reference to the name field in Moodle
-<             var name_field = Y.one('#id_name');
-<             if(Y.one('.mceMiddle iframe')) {
-< 	            var image_frame_id = Y.one('.mceMiddle iframe')._node.id;
-< 	            if(image_frame_id) {
-< 	            	var frame_doc_obj = window.frames[image_frame_id].document || window.frames[image_frame_id].contentWindow.document;
-< 	            	var image_desc_obj = frame_doc_obj.getElementById("alt");
-< 	            }
-<             }
-<             if (title.length > 0) {
-<             	// Use the "title" if we have one
-<             	name_field.set('value', title);
-<             }
-<             else {
-< 	            // Otherwise use the filename
-< 	            name_field.set('value', filename);
-<             }
-< 
-<             if (description.length <= 0) {
-<             	// No description, use title, and fallback to filename if no title
-<             	if (title.length > 0) {
-< 		            description = title;
-< 		        }
-< 		        else {
-< 		        	description = filename;
-< 		        }
-<             }
-<             if(image_desc_obj) {
-<         		Y.one(image_desc_obj).set("value",description);
-<         	}
-<             
-<             // Description field may be using TinyMCE, use TinyMCE to set content
-<             if (M.editor_tinymce) {
-<                 M.editor_tinymce = M.editor_tinymce || {};
-<                 editor_content = tinyMCE.activeEditor.getContent();
-<                 tinyMCE.activeEditor.setContent(editor_content + "<p>"+description+"</p>");
-<             }
-<             // Otherwise Description field is a text area
-<             else {
-<                 var description_field = Y.one('#id_introeditor');
-<                 editor_content = description_field.get('value');
-<                 description_field.set('value', editor_content + description);
-<             }
-< 
-< 		},
-< 		// END: Andresco
-< 		
-1176,1179d1110
-<             // BEGIN: Andresco
-<             // Set alfresco share url
-<             selectnode.one('form #view_share_url').set('value', args.content_share_link);
-<             // END: Andresco
-1190,1213d1120
-< 
-<             // BEGIN: Andresco
-< 
-<             // If the Title is empty set it to two blank spaces
-<             var title;
-<             if (args.usertitle) {
-<                 title = args.usertitle;                
-<             }
-<             else {
-<                 title = args.title; // Default to Filename
-<             }
-< 
-<             // If the Description is empty set it to two blank spaces
-<             var description;
-<             if (args.description) {
-<                 description = args.description;
-<             }
-<             else {
-<                 description = args.title // Default to Filename;
-<             }
-< 
-<             this.set_moodle_form_fields(args.title, title, description)
-<             // END: Andresco
-< 
-1238,1243c1145
-< 			
-< 			// BEGIN: Andresco
-< 			// Licenses not displayed in Andresco
-<             // this.populate_licenses_select(selectnode.one('.fp-setlicense select'));
-< 			// END: Andresco
-< 			
----
->             this.populate_licenses_select(selectnode.one('.fp-setlicense select'));
-1254,1256d1155
-< 				// BEGIN: Andresco
-< 				// No license field in andresco
-< 				if (this.active_repo.repo_type != 'andresco') {
-1265,1266d1163
-< 				}			
-< 				// END: Andresco
-1326,1335d1222
-<             // BEGIN: Andresco
-<             var view_on_share = selectnode.one('.fp-select-view');
-<             view_on_share.on('click', function(e) {
-<             	var share_view_url = selectnode.one('form #view_share_url').get('value');
-<             	var win=window.open(share_view_url, '_blank');
-<             	win.focus();
-<             	e.preventDefault();
-<                 
-<             }, this);
-<             // END: Andresco
-1532,1548d1418
-< 
-<             // BEGIN: Andresco
-<             // Determine the type of the active repository and store it
-<             this.active_repo.repo_type = this.options.repositories[this.active_repo.id].type;
-<             
-<             // Capture the current path (used by andresco for breadcrumbs)
-<             if (data.path && this.active_repo.repo_type == 'andresco') {
-< 				
-< 				// Pass through Andresco specific repo options
-< 				this.active_repo.versioning_strategy = data.versioning_strategy ? data.versioning_strategy:null;								
-<             	current_node_array_position = data.path.length - 1;
-<             	current_node = data.path[current_node_array_position];
-<             	this.active_repo.path = current_node.path;
-< 				
-<             }			
-<             // END: Andresco
-< 
-1779,1852d1648
-< 		// BEGIN: Andresco
-< 		// Callback to handle clicking on the upload form button
-< 		// to display the upload form
-< 		display_upload_form: function(id, obj, args) {
-< 			var scope = args.scope;
-< 			scope.create_upload_form(obj);
-< 			
-< 		},
-< 		// Callback to handle clicking on upload folder button
-< 		display_upload_folder_form: function(id, obj, args) {
-< 			var scope = args.scope;
-< 			scope.create_upload_folder_form(obj);
-< 			
-< 		},
-< 		// Create upload folder form
-< 		create_upload_folder_form: function(data) {
-< 			console.log(data);
-< 			var client_id = this.options.client_id;
-<             var id = data.upload.id+'_'+client_id;
-<             var content = this.fpnode.one('.fp-content');
-<             var template_name = 'uploadfolderform_'+this.options.repositories[data.repo_id].type;
-<             var template = M.core_filepicker.templates[template_name] || M.core_filepicker.templates['uploadform'];
-<             content.setContent(template);
-<             content.all('.fp-folder,.fp-saveas,.fp-description,.fp-setauthor').each(function (node) {
-<                 node.all('label').set('for', node.one('input,select,textarea').generateID());
-<             });
-<             content.one('form').set('id', id);
-<             content.one('.fp-folder input').set('name', 'repo_upload_folder');
-<             content.one('.fp-saveas input').set('name', 'title');
-<             content.one('.fp-setauthor input').setAttrs({name:'author', value:this.options.author});
-<             content.one('form').appendChild(Y.Node.create('<input/>').
-<                     setAttrs({type:'hidden',name:'itemid',value:this.options.itemid}));
-<             var scope = this;
-<             
-<             content.one('.fp-upload-folder-btn').on('click', function(e) {
-<                 e.preventDefault();
-<                 var license = content.one('.fp-setlicense select');
-< 
-<                 // BEGIN: Andresco
-<                 // Capture Andresco specific fields
-<                 var description = content.one('.fp-description');
-<                 
-<                 /* Skip license, not used
-<                 this.set_preference('recentlicense', license.get('value'));
-<                 if (!content.one('.fp-file input').get('value')) {
-<                     scope.print_msg(M.str.repository.nofilesattached, 'error');
-<                     return false;
-<                 }
-<                 */
-<                 
-<                 // END: Andresco
-<                 this.hide_header();
-<                 scope.request({
-<                         scope: scope,
-<                         action:'uploadfolder',
-<                         client_id: client_id,
-<                         // BEGIN: Andresco
-<                         // Along with savepath, pass upload path UUID to as parameter to upload to correct node
-<                         params: {'savepath':scope.options.savepath, 'upload_uuid':scope.active_repo.path},
-<                         // params: {'savepath':scope.options.savepath},
-<                     	// END: Andresco
-<                         repository_id: scope.active_repo.id,
-<                         form: {id: id, upload:true},
-<                         onerror: function(id, o, args) {
-<                         	scope.create_upload_folder_form(data);
-<                         },
-<                         callback: function(id, o, args) {
-<                         	scope.list({'path':scope.active_repo.path});
-<                         }
-<                 }, true);
-<             }, this);
-<             
-<         },
-< 		// END: Andresco
-1860,1863c1656,1658
-<             // BEGIN: Andresco
-<             // Load custom Andresco template elements
-<             content.all('.fp-file,.fp-saveas,.fp-description,.fp-setauthor').each(function (node) {
-<                 node.all('label').set('for', node.one('input,select,textarea').generateID());
----
+46a47,58
+>  /**
+>   * Enhanced by Andresco
+>   * http://www.androgogic.com/andresco
+>   * 
+>   * This is the repository/filepicker.js file delivered with Moodle 2.5
+>   * with enhancements specific to Andresco.
+>   * 
+>   * @copyright  2012+ Androgogic Pty Ltd
+>   * @since      2.5
+>   *
+>   **/
 > 
->             content.all('.fp-file,.fp-saveas,.fp-setauthor,.fp-setlicense').each(function (node) {
->                 node.all('label').set('for', node.one('input,select').generateID());
-1865d1659
-<             // END: Andresco
-1873,1880c1667,1668
-<             //BEGIN: Andresco
-<             // Add content type for upload files
-<             content.one('.fp-setcontenttype select').set('name', 'contenttype');
-<             // Licenses not displayed in Andresco
-<             // content.one('.fp-setlicense select').set('name', 'license');			
-<             // this.populate_licenses_select(content.one('.fp-setlicense select'))
-< 			// END: Andresco 
-< 			
+1024a1037,1088
+> 
+> 		// BEGIN: Andresco
+> 		// Sets Moodle form fields based on the file name, title, and description
+> 		set_moodle_form_fields: function(filename, title, description) {
+> 			
+> 			// Reference to the name field in Moodle
+>             var name_field = Y.one('#id_name');
+>             if(Y.one('.mceMiddle iframe')) {
+> 	            var image_frame_id = Y.one('.mceMiddle iframe')._node.id;
+> 	            if(image_frame_id) {
+> 	            	var frame_doc_obj = window.frames[image_frame_id].document || window.frames[image_frame_id].contentWindow.document;
+> 	            	var image_desc_obj = frame_doc_obj.getElementById("alt");
+> 	            }
+>             }
+>             if (title.length > 0) {
+>             	// Use the "title" if we have one
+>             	name_field.set('value', title);
+>             }
+>             else {
+> 	            // Otherwise use the filename
+> 	            name_field.set('value', filename);
+>             }
+> 
+>             if (description.length <= 0) {
+>             	// No description, use title, and fallback to filename if no title
+>             	if (title.length > 0) {
+> 		            description = title;
+> 		        }
+> 		        else {
+> 		        	description = filename;
+> 		        }
+>             }
+>             if(image_desc_obj) {
+>         		Y.one(image_desc_obj).set("value",description);
+>         	}
+>             
+>             // Description field may be using TinyMCE, use TinyMCE to set content
+>             if (M.editor_tinymce) {
+>                 M.editor_tinymce = M.editor_tinymce || {};
+>                 editor_content = tinyMCE.activeEditor.getContent();
+>                 tinyMCE.activeEditor.setContent(editor_content + "<p>"+description+"</p>");
+>             }
+>             // Otherwise Description field is a text area
+>             else {
+>                 var description_field = Y.one('#id_introeditor');
+>                 editor_content = description_field.get('value');
+>                 description_field.set('value', editor_content + description);
+>             }
+> 
+> 		},
+> 		// END: Andresco
+> 		
+1109a1174,1178
+>             // BEGIN: Andresco
+>             // Set alfresco share url
+>             selectnode.one('form #view_share_url').set('value', args.content_share_link);
+>             // END: Andresco
+> 
+1118a1188,1211
+> 
+>             // BEGIN: Andresco
+> 
+>             // If the Title is empty set it to two blank spaces
+>             var title;
+>             if (args.usertitle) {
+>                 title = args.usertitle;                
+>             }
+>             else {
+>                 title = args.title; // Default to Filename
+>             }
+> 
+>             // If the Description is empty set it to two blank spaces
+>             var description;
+>             if (args.description) {
+>                 description = args.description;
+>             }
+>             else {
+>                 description = args.title // Default to Filename;
+>             }
+> 
+>             this.set_moodle_form_fields(args.title, title, description)
+>             // END: Andresco
+> 
+1143c1236,1241
+<             this.populate_licenses_select(selectnode.one('.fp-setlicense select'));
 ---
->             content.one('.fp-setlicense select').set('name', 'license');
->             this.populate_licenses_select(content.one('.fp-setlicense select'))
-1895,1899d1682
-<                 // BEGIN: Andresco
-<                 // Capture Andresco specific fields
-<                 var description = content.one('.fp-description');
-<                 
-<                 /* Skip license, not used
-1905,1906d1687
-<                 */
-<                 // END: Andresco
-1912,1916c1693
-<                         // BEGIN: Andresco
-<                         // Along with savepath, pass upload path UUID to as parameter to upload to correct node
-<                         params: {'savepath':scope.options.savepath, 'upload_uuid':scope.active_repo.path},
-<                         // params: {'savepath':scope.options.savepath},
-<                     	// END: Andresco
----
->                         params: {'savepath':scope.options.savepath},
-1963,1965c1740
-<                     // BEGIN: Andresco
-<                 	this.list({'path':this.active_repo.path});
-<                     // END: Andresco
----
->                     this.list({ path: this.currentpath });
-1985,2014d1759
-< 			// BEGIN: Andresco
-< 			toolbar.one('.fp-tb-upload').one('a,button').on('click', function(e) {
-<                 e.preventDefault();
-<                 if (!this.active_repo.upload) {
-< 					
-<                     this.hide_header();
-<                     this.request({
-<                         action:'uploadform',
-<                         client_id: this.options.client_id,
-<                         repository_id: this.active_repo.id,
-<                         path:'',
-<                         callback: this.display_upload_form
-<                     }, true);
-<                 }
-<             }, this);
-< 			toolbar.one('.fp-tb-upload-folder').one('a,button').on('click', function(e) {
-<                 e.preventDefault();
-<                 if (!this.active_repo.upload) {
-< 					this.hide_header();
-<                     this.request({
-<                         action:'uploadfolderform',
-<                         client_id: this.options.client_id,
-<                         repository_id: this.active_repo.id,
-<                         path:'',
-<                         callback: this.display_upload_folder_form
-<                     }, true);
-<                 }
-<             }, this);
-< 			// END: Andresco
+> 			
+> 			// BEGIN: Andresco
+> 			// Licenses not displayed in Andresco
+>             // this.populate_licenses_select(selectnode.one('.fp-setlicense select'));
+> 			// END: Andresco
+> 			
+1153a1252,1254
+> 				// BEGIN: Andresco
+> 				// No license field in andresco
+> 				if (this.active_repo.repo_type != 'andresco') {
+1161a1263,1264
+> 				}			
+> 				// END: Andresco
+1220a1324,1333
+>             // BEGIN: Andresco
+>             var view_on_share = selectnode.one('.fp-select-view');
+>             view_on_share.on('click', function(e) {
+>             	var share_view_url = selectnode.one('form #view_share_url').get('value');
+>             	var win=window.open(share_view_url, '_blank');
+>             	win.focus();
+>             	e.preventDefault();
+>                 
+>             }, this);
+>             // END: Andresco
+1416a1530,1546
+> 
+>             // BEGIN: Andresco
+>             // Determine the type of the active repository and store it
+>             this.active_repo.repo_type = this.options.repositories[this.active_repo.id].type;
+>             
+>             // Capture the current path (used by andresco for breadcrumbs)
+>             if (data.path && this.active_repo.repo_type == 'andresco') {
+> 				
+> 				// Pass through Andresco specific repo options
+> 				this.active_repo.versioning_strategy = data.versioning_strategy ? data.versioning_strategy:null;								
+>             	current_node_array_position = data.path.length - 1;
+>             	current_node = data.path[current_node_array_position];
+>             	this.active_repo.path = current_node.path;
+> 				
+>             }			
+>             // END: Andresco
+> 
+1646a1777,1850
+> 		// BEGIN: Andresco
+> 		// Callback to handle clicking on the upload form button
+> 		// to display the upload form
+> 		display_upload_form: function(id, obj, args) {
+> 			var scope = args.scope;
+> 			scope.create_upload_form(obj);
+> 			
+> 		},
+> 		// Callback to handle clicking on upload folder button
+> 		display_upload_folder_form: function(id, obj, args) {
+> 			var scope = args.scope;
+> 			scope.create_upload_folder_form(obj);
+> 			
+> 		},
+> 		// Create upload folder form
+> 		create_upload_folder_form: function(data) {
+> 			console.log(data);
+> 			var client_id = this.options.client_id;
+>             var id = data.upload.id+'_'+client_id;
+>             var content = this.fpnode.one('.fp-content');
+>             var template_name = 'uploadfolderform_'+this.options.repositories[data.repo_id].type;
+>             var template = M.core_filepicker.templates[template_name] || M.core_filepicker.templates['uploadform'];
+>             content.setContent(template);
+>             content.all('.fp-folder,.fp-saveas,.fp-description,.fp-setauthor').each(function (node) {
+>                 node.all('label').set('for', node.one('input,select,textarea').generateID());
+>             });
+>             content.one('form').set('id', id);
+>             content.one('.fp-folder input').set('name', 'repo_upload_folder');
+>             content.one('.fp-saveas input').set('name', 'title');
+>             content.one('.fp-setauthor input').setAttrs({name:'author', value:this.options.author});
+>             content.one('form').appendChild(Y.Node.create('<input/>').
+>                     setAttrs({type:'hidden',name:'itemid',value:this.options.itemid}));
+>             var scope = this;
+>             
+>             content.one('.fp-upload-folder-btn').on('click', function(e) {
+>                 e.preventDefault();
+>                 var license = content.one('.fp-setlicense select');
+> 
+>                 // BEGIN: Andresco
+>                 // Capture Andresco specific fields
+>                 var description = content.one('.fp-description');
+>                 
+>                 /* Skip license, not used
+>                 this.set_preference('recentlicense', license.get('value'));
+>                 if (!content.one('.fp-file input').get('value')) {
+>                     scope.print_msg(M.str.repository.nofilesattached, 'error');
+>                     return false;
+>                 }
+>                 */
+>                 
+>                 // END: Andresco
+>                 this.hide_header();
+>                 scope.request({
+>                         scope: scope,
+>                         action:'uploadfolder',
+>                         client_id: client_id,
+>                         // BEGIN: Andresco
+>                         // Along with savepath, pass upload path UUID to as parameter to upload to correct node
+>                         params: {'savepath':scope.options.savepath, 'upload_uuid':scope.active_repo.path},
+>                         // params: {'savepath':scope.options.savepath},
+>                     	// END: Andresco
+>                         repository_id: scope.active_repo.id,
+>                         form: {id: id, upload:true},
+>                         onerror: function(id, o, args) {
+>                         	scope.create_upload_folder_form(data);
+>                         },
+>                         callback: function(id, o, args) {
+>                         	scope.list({'path':scope.active_repo.path});
+>                         }
+>                 }, true);
+>             }, this);
+>             
+>         },
+> 		// END: Andresco
+1654,1656c1858,1861
 < 
-2103,2111d1847
-< 			// BEGIN: Andresco
-< 			// Upload form link
-< 			if (this.active_repo.repo_type == 'andresco') { 
-< 				// TODO: Hard coded enabled - check if in upload form then disable
-< 				enable_tb_control(toolbar.one('.fp-tb-upload'), true);
-<                 toolbar.one('.fp-tb-upload').one('a,button').setContent("Upload File");
-< 			}
-< 			// END: Andresco
-< 			
+<             content.all('.fp-file,.fp-saveas,.fp-setauthor,.fp-setlicense').each(function (node) {
+<                 node.all('label').set('for', node.one('input,select').generateID());
+---
+>             // BEGIN: Andresco
+>             // Load custom Andresco template elements
+>             content.all('.fp-file,.fp-saveas,.fp-description,.fp-setauthor').each(function (node) {
+>                 node.all('label').set('for', node.one('input,select,textarea').generateID());
+1657a1863
+>             // END: Andresco
+1665,1666c1871,1878
+<             content.one('.fp-setlicense select').set('name', 'license');
+<             this.populate_licenses_select(content.one('.fp-setlicense select'))
+---
+>             //BEGIN: Andresco
+>             // Add content type for upload files
+>             content.one('.fp-setcontenttype select').set('name', 'contenttype');
+>             // Licenses not displayed in Andresco
+>             // content.one('.fp-setlicense select').set('name', 'license');			
+>             // this.populate_licenses_select(content.one('.fp-setlicense select'))
+> 			// END: Andresco 
+> 			
+1680a1893,1897
+>                 // BEGIN: Andresco
+>                 // Capture Andresco specific fields
+>                 var description = content.one('.fp-description');
+>                 
+>                 /* Skip license, not used
+1685a1903,1904
+>                 */
+>                 // END: Andresco
+1691c1910,1914
+<                         params: {'savepath':scope.options.savepath},
+---
+>                         // BEGIN: Andresco
+>                         // Along with savepath, pass upload path UUID to as parameter to upload to correct node
+>                         params: {'savepath':scope.options.savepath, 'upload_uuid':scope.active_repo.path},
+>                         // params: {'savepath':scope.options.savepath},
+>                     	// END: Andresco
+1738c1961,1963
+<                     this.list({ path: this.currentpath });
+---
+>                     // BEGIN: Andresco
+>                 	this.list({'path':this.active_repo.path});
+>                     // END: Andresco
+1757a1983,2012
+> 			// BEGIN: Andresco
+> 			toolbar.one('.fp-tb-upload').one('a,button').on('click', function(e) {
+>                 e.preventDefault();
+>                 if (!this.active_repo.upload) {
+> 					
+>                     this.hide_header();
+>                     this.request({
+>                         action:'uploadform',
+>                         client_id: this.options.client_id,
+>                         repository_id: this.active_repo.id,
+>                         path:'',
+>                         callback: this.display_upload_form
+>                     }, true);
+>                 }
+>             }, this);
+> 			toolbar.one('.fp-tb-upload-folder').one('a,button').on('click', function(e) {
+>                 e.preventDefault();
+>                 if (!this.active_repo.upload) {
+> 					this.hide_header();
+>                     this.request({
+>                         action:'uploadfolderform',
+>                         client_id: this.options.client_id,
+>                         repository_id: this.active_repo.id,
+>                         path:'',
+>                         callback: this.display_upload_folder_form
+>                     }, true);
+>                 }
+>             }, this);
+> 			// END: Andresco
+> 
+1845a2101,2109
+> 			// BEGIN: Andresco
+> 			// Upload form link
+> 			if (this.active_repo.repo_type == 'andresco') { 
+> 				// TODO: Hard coded enabled - check if in upload form then disable
+> 				enable_tb_control(toolbar.one('.fp-tb-upload'), true);
+>                 toolbar.one('.fp-tb-upload').one('a,button').setContent("Upload File");
+> 			}
+> 			// END: Andresco
+> 			

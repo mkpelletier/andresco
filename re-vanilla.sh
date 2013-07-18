@@ -6,10 +6,10 @@ echo Re-vanilla from Andresco to Moodle core files
 echo -----------------------------------------------------------------------------
 
 # location of your moodle vanilla
-moodle_vanilla=/www/moodle/25
+moodle_vanilla={path to moodle vanilla here}
 
 # location of target environment you want to re-vanilla
-moodle_target=/www/andro/training/25
+moodle_target={path to moodle target environment here}
 
 cp -v $moodle_vanilla/admin/repositoryinstance.php $moodle_target/admin/repositoryinstance.php
 cp -v $moodle_vanilla/admin/settings/plugins.php $moodle_target/admin/settings/plugins.php

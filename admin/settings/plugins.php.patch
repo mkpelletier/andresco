@@ -1,9 +1,22 @@
-242,249d241
-<     // BEGIN: Andresco
-<     $ADMIN->add('repositorysettings', new admin_externalpage('repositorydisable',
-<         new lang_string('disablerepository', 'repository_andresco'), $url, 'moodle/site:config', true),
-<         '', $url);
-<     $ADMIN->add('repositorysettings', new admin_externalpage('repositoryenable',
-<         new lang_string('enablerepository', 'repository_andresco'), $url, 'moodle/site:config', true),
-<         '', $url);
-<     // END: Andresco
+2a3,14
+> /**
+>  * Enhanced by Andresco
+>  * http://www.androgogic.com/andresco
+>  * 
+>  * This is the files/render.php file delivered with Moodle 2.5
+>  * with enhancements specific to Andresco.
+>  * 
+>  * @copyright  2012+ Androgogic Pty Ltd
+>  * @since      2.5
+>  *
+>  **/
+> 
+241a254,261
+>     // BEGIN: Andresco
+>     $ADMIN->add('repositorysettings', new admin_externalpage('repositorydisable',
+>         new lang_string('disablerepository', 'repository_andresco'), $url, 'moodle/site:config', true),
+>         'repository_andresco', $url);
+>     $ADMIN->add('repositorysettings', new admin_externalpage('repositoryenable',
+>         new lang_string('enablerepository', 'repository_andresco'), $url, 'moodle/site:config', true),
+>         'repository_andresco', $url);
+>     // END: Andresco
