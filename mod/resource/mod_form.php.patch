@@ -1,0 +1,47 @@
+27,40d26
+< 
+<  /**
+<   * Enhanced by Andresco
+<   * http://code.google.com/p/andresco
+<   * 
+<   * This is the mod/resource/mod_form.php file delivered with Moodle 2.4
+<   * with enhancements specific to Andresco.
+<   * 
+<   * @copyright  2012+ Androgogic Pty Ltd
+<   * @author     Praj Basnet <praj.basnet@androgogic.com>
+<   * @since      2.4
+<   *
+<   **/
+< 
+63,77d48
+<         // BEGIN: Andresco
+<         // Put content selection before general selection
+<         
+<         //-------------------------------------------------------
+<         
+<         $mform->addElement('header', 'contentsection', get_string('contentheader', 'resource'));
+< 
+<         $filemanager_options = array();
+<         $filemanager_options['accepted_types'] = '*';
+<         $filemanager_options['maxbytes'] = 0;
+<         $filemanager_options['maxfiles'] = -1;
+<         $filemanager_options['mainfile'] = true;
+< 
+<         $mform->addElement('filemanager', 'files', get_string('selectfiles'), null, $filemanager_options);
+< 
+86a58
+>         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+90c62,68
+<         // END: Andresco
+---
+>         $mform->addElement('header', 'contentsection', get_string('contentheader', 'resource'));
+> 
+>         $filemanager_options = array();
+>         $filemanager_options['accepted_types'] = '*';
+>         $filemanager_options['maxbytes'] = 0;
+>         $filemanager_options['maxfiles'] = -1;
+>         $filemanager_options['mainfile'] = true;
+91a70,72
+>         $mform->addElement('filemanager', 'files', get_string('selectfiles'), null, $filemanager_options);
+> 
+>         //-------------------------------------------------------

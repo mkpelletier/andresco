@@ -1,0 +1,9 @@
+242,249d241
+<     // BEGIN: Andresco
+<     $ADMIN->add('repositorysettings', new admin_externalpage('repositorydisable',
+<         new lang_string('disablerepository', 'repository_andresco'), $url, 'moodle/site:config', true),
+<         '', $url);
+<     $ADMIN->add('repositorysettings', new admin_externalpage('repositoryenable',
+<         new lang_string('enablerepository', 'repository_andresco'), $url, 'moodle/site:config', true),
+<         '', $url);
+<     // END: Andresco

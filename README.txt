@@ -8,20 +8,21 @@
 Andresco: Moodle-Alfresco Integration by Androgogic
 
 This is open source software released under the GPL3 license.
-See LICENSE.TXT for details on that.
 
 Andresco is hosted at Google Code:
 http://code.google.com/p/andresco
 
-This branch contains moodle-customised code for Moodle 2.0.x.
+This branch contains customisations to Moodle core code for
+Moodle 2.4.x. These are in the form of patch files which are 
+applied as follows:
 
-Install Steps
--------------
-(2) Compare and patch repository/filepicker.js
-(3) Compare and patch repository/lib.php
-(4) Compare and patch repository_ajax.php
-(5) Compare and patch mod/resource/mod_form.php
-(6) Compare and patch mod/url/mod_form.php
+	$ patch {core_file.php} < {core_file.php.patch}
+
+For convenience, use the patch.sh shell script to patch files. 
+
+Note you will need to modify the moodle_home value in this script. 
+Also, this is a blanket patch of files, and you may want to review
+changes rather than blanket patching files if you haven't done so before.
 
 Please use the Google code project home page to download, provide feedback
 and support the project.

@@ -1,0 +1,265 @@
+22,34d21
+<  /**
+<   * Enhanced by Andresco
+<   * http://code.google.com/p/andresco
+<   * 
+<   * This is the files/render.php file delivered with Moodle 2.4
+<   * with enhancements specific to Andresco.
+<   * 
+<   * @copyright  2012+ Androgogic Pty Ltd
+<   * @author     Praj Basnet <praj.basnet@androgogic.com>
+<   * @since      2.4
+<   *
+<   **/
+< 
+535,536d521
+< 		// BEGIN: Andresco
+< 		// Add Upload toolbar button
+553,554d537
+< 					<div class="{!}fp-tb-upload"><a href="#"><img src="'.$this->pix_url('a/add_file').'" /> '.get_string('upload_file', 'repository_andresco').'</a></div>	
+< 					<div class="{!}fp-tb-upload-folder"><a href="#"><img src="'.$this->pix_url('a/add_file').'" /> '.get_string('upload_folder', 'repository_andresco').'</a></div>
+572d554
+< 		// END: Andresco
+688,689d669
+<         // BEGIN: Andresco
+<         // Add view in share button
+708c688
+<                 <td class="mdl-left"><input type="text"/><input type="hidden" id="view_share_url" /></td></tr>
+---
+>                 <td class="mdl-left"><input type="text"/></td></tr>
+718d697
+<             <button class="{!}fp-select-view">'.get_string('view_on_share', 'repository_andresco').'</button>
+735d713
+<         // END: Andresco
+783,1013d760
+<     // BEGIN: Andresco
+<     
+<     /**
+<      * FilePicker JS template for 'Andresco' repository
+<      *
+<      * Content to display when user chooses 'Upload file' repository (will be nested inside
+<      * element with class 'fp-content').
+<      *
+<      * Must contain form (enctype="multipart/form-data" method="POST")
+<      *
+<      * The elements with the following classnames must be present:
+<      * 'fp-file', 'fp-saveas', 'fp-description', fp-setauthor'. Inside each of them must have
+<      * one input element. They may also have labels.
+<      *
+<      * Element with class 'fp-upload-btn' will hold onclick event for uploading the file;
+<      *
+<      * Please note that some fields may be hidden using CSS if this is part of quickupload form
+<      *
+<      * @return string
+<      */
+<     private function fp_js_template_uploadform_andresco() {
+<         $rv = '
+< <div class="fp-upload-form mdl-align">
+<     <div class="fp-content-center">
+<         <form enctype="multipart/form-data" method="POST">
+<             <table >
+<                 <tr class="{!}fp-file">
+<                     <td class="mdl-right"><label>'.get_string('uploadfilename', 'repository_andresco').'</label>:</td>
+<                     <td class="mdl-left"><input type="file"/></td></tr>
+<                 <tr class="{!}fp-saveas">
+<                     <td class="mdl-right"><label>'.get_string('uploadtitle', 'repository_andresco').'</label>:</td>
+<                     <td class="mdl-left"><input type="text"/></td></tr>
+<                 <tr class="{!}fp-description">
+<                     <td class="mdl-right"><label>'.get_string('uploaddescription', 'repository_andresco').'</label>:</td>
+<                     <td class="mdl-left"><textarea name="description" rows=5 cols=49 style="border: 1px solid #BBBBBB"></textarea></td></tr>
+<                 <tr class="{!}fp-setauthor">
+<                     <td class="mdl-right"><label>'.get_string('author', 'repository').'</label>:</td>
+<                     <td class="mdl-left"><input type="text"/></td></tr>
+<                 <tr class="{!}fp-setcontenttype">
+<                     <td class="mdl-right"><label>'.get_string('contenttype', 'repository_andresco').'</label>:</td>
+<                     <td class="mdl-left">
+< 						<select>	
+< 							<option value="">Select Type</option>
+< 							<option value="application/vnd.adobe.xdp+xml">Adobe Acrobat XML Data Package</option>	
+< 							<option value="application/vnd.adobe.air-application-installer-package+zip">Adobe AIR</option>	
+< 							<option value="application/x-zip">Adobe Flex Project File</option>	
+< 							<option value="application/framemaker">Adobe FrameMaker</option>	
+< 							<option value="application/illustrator">Adobe Illustrator File</option>	
+< 							<option value="application/x-indesign">Adobe InDesign Document</option>	
+< 							<option value="application/pagemaker">Adobe PageMaker</option>	
+< 							<option value="application/pdf">Adobe PDF Document</option>	
+< 							<option value="image/vnd.adobe.photoshop">Adobe Photoshop</option>	
+< 							<option value="image/vnd.adobe.premiere">Adobe Premiere</option>	
+< 							<option value="audio/vnd.adobe.soundbooth">Adobe SoundBooth</option>	
+< 							<option value="audio/x-aiff">AIFF Audio</option>	
+< 							<option value="application/acp">Alfresco Content Package</option>	
+< 							<option value="image/x-portable-anymap">Anymap Image</option>	
+< 							<option value="application/vnd.apple.keynote">Apple iWork Keynote</option>	
+< 							<option value="application/vnd.apple.numbers">Apple iWork Numbers</option>	
+< 							<option value="application/vnd.apple.pages">Apple iWork Pages</option>	
+< 							<option value="image/vnd.dwg">AutoCAD Drawing</option>	
+< 							<option value="image/x-dwt">AutoCAD Template</option>	
+< 							<option value="audio/basic">Basic Audio</option>	
+< 							<option value="image/bmp">Bitmap Image</option>	
+< 							<option value="image/cgm">CGM Image</option>	
+< 							<option value="text/csv">Comma Separated Values (CSV)</option>	
+< 							<option value="application/dita+xml">DITA</option>	
+< 							<option value="message/rfc822">EMail</option>	
+< 							<option value="application/eps">EPS Type PostScript</option>	
+< 							<option value="audio/x-flac">FLAC Audio</option>	
+< 							<option value="application/x-fla">Flash Source</option>	
+< 							<option value="video/x-flv">Flash Video</option>	
+< 							<option value="image/gif">GIF Image</option>	
+< 							<option value="image/x-portable-graymap">Greymap Image</option>	
+< 							<option value="application/x-gzip">GZIP</option>	
+< 							<option value="application/x-gtar">GZIP Tarball</option>	
+< 							<option value="text/html">HTML</option>	
+< 							<option value="application/vnd.oasis.opendocument.text-web">HTML Document Template</option>	
+< 							<option value="text/calendar">iCalendar File</option>	
+< 							<option value="image/ief">IEF Image</option>	
+< 							<option value="application/java">Java Class</option>	
+< 							<option value="application/x-javascript">Java Script</option>	
+< 							<option value="image/jp2">JPEG 2000 Image</option>	
+< 							<option value="image/jpeg">JPEG Image</option>	
+< 							<option value="application/json">JSON</option>	
+< 							<option value="application/x-latex">Latex</option>	
+< 							<option value="application/x-troff-man">Man Page</option>	
+< 							<option value="text/mediawiki">MediaWiki Markup</option>	
+< 							<option value="application/vnd.ms-excel">Microsoft Excel</option>	
+< 							<option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Microsoft Excel 2007</option>	
+< 							<option value="application/vnd.ms-excel.template.macroenabled.12">Microsoft Excel Macro</option>	
+< 							<option value="application/vnd.openxmlformats-officedocument.spreadsheetml.template">Microsoft Excel Template 2007</option>	
+< 							<option value="application/vnd.ms-powerpoint">Microsoft PowerPoint</option>	
+< 							<option value="application/vnd.openxmlformats-officedocument.presentationml.presentation">Microsoft PowerPoint 2007</option>	
+< 							<option value="application/vnd.ms-project">Microsoft Project</option>	
+< 							<option value="application/visio">Microsoft Visio</option>	
+< 							<option value="application/msword">Microsoft Word</option>	
+< 							<option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document">Microsoft Word 2007</option>	
+< 							<option value="application/vnd.openxmlformats-officedocument.wordprocessingml.template">Microsoft Word Template 2007</option>	
+< 							<option value="audio/mpeg">MPEG Audio</option>	
+< 							<option value="video/mpeg">MPEG Video</option>	
+< 							<option value="video/mpeg2">MPEG2 Video</option>	
+< 							<option value="video/mp4">MPEG4 Video</option>	
+< 							<option value="video/x-m4v">MPEG4 Video (m4v)</option>	
+< 							<option value="video/x-ms-asf">MS ASF Streaming Video</option>	
+< 							<option value="video/x-msvideo">MS Video</option>	
+< 							<option value="audio/x-ms-wma">MS WMA Streaming Audio</option>	
+< 							<option value="video/x-ms-wmv">MS WMV Streaming Video</option>	
+< 							<option value="application/octet-stream">Octet Stream</option>	
+< 							<option value="audio/ogg">Ogg Audio</option>	
+< 							<option value="application/ogg">Ogg Multiplex</option>	
+< 							<option value="video/ogg">Ogg Video</option>	
+< 							<option value="audio/vorbis">Ogg Vorbis Audio</option>	
+< 							<option value="application/vnd.oasis.opendocument.chart">OpenDocument Chart</option>	
+< 							<option value="application/vnd.oasis.opendocument.database">OpenDocument Database</option>	
+< 							<option value="application/vnd.oasis.opendocument.graphics">OpenDocument Drawing</option>	
+< 							<option value="application/vnd.oasis.opendocument.graphics-template">OpenDocument Drawing Template</option>	
+< 							<option value="application/vnd.oasis.opendocument.formula">OpenDocument Formula</option>	
+< 							<option value="application/vnd.oasis.opendocument.image">OpenDocument Image</option>	
+< 							<option value="application/vnd.oasis.opendocument.text-master">OpenDocument Master Document</option>	
+< 							<option value="application/vnd.oasis.opendocument.presentation">OpenDocument Presentation</option>	
+< 							<option value="application/vnd.oasis.opendocument.presentation-template">OpenDocument Presentation Template</option>	
+< 							<option value="application/vnd.oasis.opendocument.spreadsheet">OpenDocument Spreadsheet</option>	
+< 							<option value="application/vnd.oasis.opendocument.spreadsheet-template">OpenDocument Spreadsheet Template</option>	
+< 							<option value="application/vnd.oasis.opendocument.text">OpenDocument Text (OpenOffice 2.0)</option>	
+< 							<option value="application/vnd.oasis.opendocument.text-template">OpenDocument Text Template</option>	
+< 							<option value="application/vnd.sun.xml.calc">OpenOffice 1.0/StarOffice6.0 Calc 6.0</option>	
+< 							<option value="application/vnd.sun.xml.draw">OpenOffice 1.0/StarOffice6.0 Draw 6.0</option>	
+< 							<option value="application/vnd.sun.xml.impress">OpenOffice 1.0/StarOffice6.0 Impress 6.0</option>	
+< 							<option value="application/vnd.sun.xml.writer">OpenOffice 1.0/StarOffice6.0 Writer 6.0</option>	
+< 							<option value="application/vnd.ms-outlook">Outlook MSG</option>	
+< 							<option value="image/x-portable-pixmap">Pixmap Image</option>	
+< 							<option value="text/plain">Plain Text</option>	
+< 							<option value="image/png">PNG Image</option>	
+< 							<option value="image/x-portable-bitmap">Portable Bitmap</option>	
+< 							<option value="application/postscript">PostScript</option>	
+< 							<option value="application/remote-printing">Printer Text File</option>	
+< 							<option value="video/quicktime">Quicktime Video</option>	
+< 							<option value="video/x-rad-screenplay">RAD Screen Display</option>	
+< 							<option value="image/x-cmu-raster">Raster Image</option>	
+< 							<option value="image/x-rgb">RGB Image</option>	
+< 							<option value="text/richtext">Rich Text</option>	
+< 							<option value="application/rtf">Rich Text Format</option>	
+< 							<option value="image/svg">Scalable Vector Graphics Image</option>	
+< 							<option value="video/x-sgi-movie">SGI Video</option>	
+< 							<option value="text/sgml">SGML (Human Readable)</option>	
+< 							<option value="application/sgml">SGML (Machine Readable)</option>	
+< 							<option value="application/x-sh">Shell Script</option>	
+< 							<option value="application/x-shockwave-flash">Shockwave Flash</option>	
+< 							<option value="application/vnd.stardivision.chart">StaChart 5.x</option>	
+< 							<option value="application/vnd.stardivision.calc">StarCalc 5.x</option>	
+< 							<option value="application/vnd.stardivision.draw">StarDraw 5.x</option>	
+< 							<option value="application/vnd.stardivision.impress">StarImpress 5.x</option>	
+< 							<option value="application/vnd.stardivision.impress-packed">StarImpress Packed 5.x</option>	
+< 							<option value="application/vnd.stardivision.math">StarMath 5.x</option>	
+< 							<option value="application/vnd.stardivision.writer">StarWriter 5.x</option>	
+< 							<option value="application/vnd.stardivision.writer-global">StarWriter 5.x global</option>	
+< 							<option value="text/css">Style Sheet</option>	
+< 							<option value="text/tab-separated-values">Tab Separated Values</option>	
+< 							<option value="application/x-tar">Tarball</option>	
+< 							<option value="application/x-tex">Tex</option>	
+< 							<option value="application/x-texinfo">Tex Info</option>	
+< 							<option value="image/tiff">TIFF Image</option>	
+< 							<option value="x-world/x-vrml">VRML</option>	
+< 							<option value="audio/x-wav">WAV Audio</option>	
+< 							<option value="video/webm">WebM Video</option>	
+< 							<option value="application/wordperfect">WordPerfect</option>	
+< 							<option value="image/x-xbitmap">XBitmap Image</option>	
+< 							<option value="application/xhtml+xml">XHTML</option>	
+< 							<option value="text/xml">XML</option>	
+< 							<option value="image/x-xpixmap">XPixmap Image</option>	
+< 							<option value="image/x-xwindowdump">XWindow Dump</option>	
+< 							<option value="application/x-compress">Z Compress</option>	
+< 							<option value="application/zip">ZIP</option>
+< 						</select>
+<                     </td></tr>
+<             </table>
+<         </form>
+<         <div><button class="{!}fp-upload-btn">'.get_string('upload', 'repository').'</button></div>
+<     </div>
+< </div> ';
+<         return preg_replace('/\{\!\}/', '', $rv);
+<     }
+<     
+<     /**
+<      * FilePicker JS template for 'Andresco' repository
+<      *
+<      * Content to display when user chooses 'Upload folder' repository (will be nested inside
+<      * element with class 'fp-content').
+<      *
+<      * Must contain form (method="POST")
+<      *
+<      * The elements with the following classnames must be present:
+<      * 'fp-file', 'fp-saveas', 'fp-description', fp-setauthor'. Inside each of them must have
+<      * one input element. They may also have labels.
+<      *
+<      * Element with class 'fp-upload-btn' will hold onclick event for uploading the file;
+<      *
+<      * Please note that some fields may be hidden using CSS if this is part of quickupload form
+<      *
+<      * @return string
+<      */
+<     
+< private function fp_js_template_uploadfolderform_andresco() {
+<         $rv = '
+< <div class="fp-upload-form mdl-align">
+<     <div class="fp-content-center">
+<         <form method="POST">
+<             <table >
+<                 <tr class="{!}fp-folder">
+<                     <td class="mdl-right"><label>'.get_string('uploadfoldername', 'repository_andresco').'</label>:</td>
+<                     <td class="mdl-left"><input type="text"/></td></tr>
+<                 <tr class="{!}fp-saveas">
+<                     <td class="mdl-right"><label>'.get_string('uploadtitle', 'repository_andresco').'</label>:</td>
+<                     <td class="mdl-left"><input type="text"/></td></tr>
+<                 <tr class="{!}fp-description">
+<                     <td class="mdl-right"><label>'.get_string('uploaddescription', 'repository_andresco').'</label>:</td>
+<                     <td class="mdl-left"><textarea name="description" rows=5 cols=49 style="border: 1px solid #BBBBBB"></textarea></td></tr>
+<                 <tr class="{!}fp-setauthor">
+<                     <td class="mdl-right"><label>'.get_string('author', 'repository').'</label>:</td>
+<                     <td class="mdl-left"><input type="text"/></td></tr>
+<             </table>
+<         </form>
+<         <div><button class="{!}fp-upload-folder-btn">'.get_string('uploadfolder', 'repository_andresco').'</button></div>
+<     </div>
+< </div> ';
+<         return preg_replace('/\{\!\}/', '', $rv);
+<     }
+< 
+<     // END: Andresco
+< 
